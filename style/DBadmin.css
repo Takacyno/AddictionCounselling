@@ -1,0 +1,17 @@
+.parent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+.child{
+    text-align: center;
+}
+.displayDiv{
+    text-align: center;
+    display: inline-block;
+}
+.queryDiv{
+    text-align: center;
+    display: inline-block;
+}

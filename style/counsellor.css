@@ -1,0 +1,336 @@
+input[type="submit"]{
+  appearance: none;
+  -webkit-appearance: none;
+}
+input[type="submit"]::-webkit-search-decoration{
+  display: none;
+}
+input[type="submit"]:focus{
+  outline-offset: -2px;
+}
+header{
+  margin:40px;
+  background-color: white;
+  border-bottom: 3px solid;
+  border-color: #000;
+  display: flex;
+  justify-content:space-between;
+  vertical-align: middle;
+  }
+.parent{
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .child{
+    display: block;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .calendar, .dailyCheck , .forms{
+    text-align: center;
+    display: inline-block;
+  }
+  .form{
+    display: block;
+  }
+  .humMenu{
+    display: inline-block;
+  }
+  #humMenu {
+    display: inline-block;
+    padding: 12px;
+    background: white;
+  }
+  h3,form{
+    display: block;
+  }  
+  #humCheck, #humClose { display:none; }
+  #humOpen {
+    display: block;
+    width: 58px;
+    cursor: pointer;
+  }
+  #humOpen:hover {
+    opacity: 0.5;
+  }
+  #humOpen img { display: inline-block; }
+  #humClose, nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+  }
+  #humClose {
+    z-index: 2;
+    width: 100%;
+    background: gray;
+    opacity: 0.8;
+    transition: 0.5s;
+  }
+  nav {
+    z-index: 3;
+    width: 330px;
+    background: white;
+    transition: 0.5s;
+    transform: translateX(-100%);
+  }
+  #humCheck:checked ~ #humClose { display: inline-block; }
+  #humCheck:checked ~ nav {
+    transform: translateX(0);
+  }
+  nav ol{
+  overflow: hidden;
+  list-style: none;
+  }
+  nav li{
+    padding: 15px 0;
+    margin: 10px 0;
+  }
+  nav li:hover{
+    opacity: 0.5;
+  }
+  nav li a{
+    font-size: 20px;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+  }
+  .list{
+    overflow: auto;
+    list-style: none;
+  }
+  .Btn{
+    background-color: white;
+    margin :0%;
+    border:0%;
+    cursor: pointer;
+    width:100%;
+    height:100%;
+    border-color: white;
+  }
+  .btn{
+    border:none;
+    background-color: white;
+  }
+
+#updateThisCounsellorDiv{
+  text-align: left;
+}
+
+#infoCheck, #infoClose { display:none; }
+  #infoOpen {
+  display: block;
+  cursor: pointer;
+  border:solid 1px black;
+  }
+  #infoOpen:hover {
+  opacity: 0.5;
+  }
+  #infoOpen { display: inline-block; }
+  #infoClose, #info {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  }
+  #infoClose {
+  z-index: 2;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #info{
+  z-index: 3;
+  width: 900px;
+  background: white;
+  transition: 0.5s;
+  transform: translateX(+100%);
+  overflow: auto;
+  }
+  #infoCheck:checked ~ #infoClose { display: inline-block; }
+  #infoCheck:checked ~ #info{
+  transform: translateX(0);
+  }
+  /*詳細情報変更*/
+  #infoUpdateCheck, #infoUpdateClose { display:none; }
+  #infoUpdateOpen {
+  display: block;
+  cursor: pointer;
+  border:solid 1px black;
+  }
+  #infoUpdateOpen:hover {
+  opacity: 0.5;
+  }
+  #infoUpdateOpen { display: inline-block; }
+  #infoUpdateClose, #infoUpdate {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  }
+  #infoUpdateClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #infoUpdate{
+  z-index: 5;
+  width: 900px;
+  background: white;
+  transition: 0.5s;
+  transform: translateX(+100%);
+  overflow-y: auto;
+  }
+  #infoUpdateCheck:checked ~ #infoUpdateClose { display: inline-block; }
+  #infoUpdateCheck:checked ~ #infoUpdate{
+  transform: translateX(0);
+  }
+  #passCheck, #passClose { display:none; }
+  #passOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #passOpen:hover {
+  opacity: 0.5;
+  }
+  #passOpen { display: inline-block; }
+  #passClose, #pass {
+  position: fixed;
+  right:0;
+  top: 0;
+  height: 100%;
+  }
+  #passClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #pass {
+  z-index: 5;
+  width: 600px;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+100%);
+  overflow: auto;
+  display: none;
+  }
+  #passCheck:checked ~ #passClose { display: inline-block; }
+  #passCheck:checked ~ #pass{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  #plusFrontCoverBBSMenu {
+    padding: 12px;
+    margin-left: 0%;
+    background: white;
+    display: inline-block;
+    text-align: left;
+    }
+    #plusFrontCoverBBSForm {
+      text-align: left;
+      }
+    #plusFrontCoverBBSCheck, #plusFrontCoverBBSClose { display:none; }
+    #plusFrontCoverBBSOpen {
+    display: inline-block;
+    cursor: pointer;
+    
+    }
+    #plusFrontCoverBBSOpen:hover {
+    opacity: 0.5;
+    }
+    #plusFrontCoverBBSOpen { display: inline-block; }
+    #plusFrontCoverBBSClose, #plusFrontCoverBBSForm {
+    position: fixed;
+    left:0;
+    top: 0;
+    height: 100%;
+    }
+    #plusFrontCoverBBSClose {
+    z-index: 2;
+    width: 100%;
+    background: gray;
+    opacity: 0.8;
+    transition: 0.5s;
+    }
+    #plusFrontCoverBBSForm {
+    z-index: 3;
+    width: 600px;
+    background: white;
+    transition: 0.5s;
+    transform: translateY(+100%);
+    overflow: auto;
+    }
+    #plusFrontCoverBBSCheck:checked ~ #plusFrontCoverBBSClose { display: inline-block; }
+    #plusFrontCoverBBSCheck:checked ~ #plusFrontCoverBBSForm{
+    transform: translateY(0);
+    }
+  
+
+
+
+
+
+.Red{
+  color: red;
+}
+
+  .none{
+    display: none;
+  }
+  .btn:hover{
+    cursor: pointer;
+  }
+  .patientBtn{
+    background-color: white;
+    border:0%;
+    cursor: pointer;
+    margin :0%;
+    width:100%;
+    height:100%;
+    border-color: white;
+    text-align: left;
+  }
+  .patientBtnLabel{
+    background-color: white;
+    width:100%;
+    text-align: left;
+  }
+ul{
+  list-style-type: none;
+  margin :0%;
+  width:100%;
+  height:100%;
+}
+ol li{
+  text-align: left;
+}
+.child li{
+  margin :0%;
+  width:100%;
+  height:100%;
+}
+  
+.canPush:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.inlineBlock{
+  display: inline-block;
+}
+.overFlowAuto{
+  overflow: auto;
+}
+.hidden{
+  visibility: hidden;
+}
+textarea{
+  vertical-align: top;
+}

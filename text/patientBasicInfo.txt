@@ -1,0 +1,2 @@
+ID Allname Hospital Age Sex Counsellors PersonalRelations Residence RhythmOfLife Interests Profession WorkExp HarshChildhoodExp CriminalRecord OtherTraumas Supplement Goal TestShow Addictions Holiday
+ID 名前 病院 年齢 性別 担当カウンセラー 人間関係 住所 生活リズム 趣味 職業 職歴 子供の頃の過酷な経験 犯罪歴、補導歴 その他のトラウマ 補足 目標 テストの表示 標的行動 休み

@@ -1,0 +1,3 @@
+ID Rank Allname Hospital
+ID 役職 名前 病院
+管理者 院長 先生
