@@ -1,18 +1,42 @@
 <?php
-    session_start();
+    
+        session_start();
+        // // セッションのライフタイム変更
+        // ini_set( 'session.gc_maxlifetime', 60 );  // 秒(デフォルト:1440)
+        
+        // // セッションが存在していない(タイムアウトもしくはログアウトされている)
+        // if($_SESSION['ID']="") {
+            // ここにログイン処理を書く（ログイン画面に遷移させる）
+            // header('Location:../login.php');
+            // exit();            
+        // セッションが存在している場合はセッションのライフタイムを更新
+        // }
+        //     unset($_SESSION['LOGIN_INFO']);
+        //     $_SESSION['LOGIN_INFO'] = true;
+        // }
+        // public function initialize() {
+        //     /**
+        //      * セッションの終了をチェックする
+        //      */
+        //     if ($this->session->has('created')) {
+        //         $created = $this->session->get('created');
+        //         if ($created < (new DateTime('now'))->modify('-30 minute')) {
+        //             // 指定時間経過後
+        //             $this->session->remove('created'); 
+        //         }
+        //         // 最終アクセスから経過後としたいなら以下を生かせばいい createedよりも別の名前がよいかも
+        //         //$this->session->set("created", new DateTime('now'));
+        //     }
+        // }
+
     $DBhost='133.18.244.234';
     $DBusername='home10';
     $DBpassword='8940hakuyo';
-    $DBname="takayuki";
     $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-    $db=mysqli_select_db($link,$DBname);
-    try{
-    $pdo=new PDO('mysql:dbname='.$DBname.';host='.$DBhost,$DBusername,$DBpassword);
-    }catch(PDOException $e){
-        exit($e->getMessage());
-    }
+    $db=mysqli_select_db($link,"takayuki");
     // サニタイズ
     $clean = array();
+
     if (!empty($_POST)) {
         foreach ($_POST as $key => $value) {
             $clean[$key] = htmlspecialchars($value, ENT_QUOTES);
@@ -23,13 +47,10 @@
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
     }
+    
     $row = mysqli_fetch_assoc($result);
     $addicNum=(int)$row["AddicNum"];
-    if($_SESSION["rank"]==0){
-        $hospitalNum=(int)$row["HospitalNum"];
-    }else{
-        $hospitalNum=1;
-    }
+    
     
     if($_SESSION["class"]==0){
         $query='SELECT Email from UserData where ID="'.$_SESSION['ID'].'";';
@@ -45,6 +66,7 @@
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
     }
+    
     $Emails=array();
     while ($row = mysqli_fetch_array($result)) {
         if($row[0]!=$Email){
@@ -71,6 +93,7 @@
     }
     fclose($file);
     $query='SELECT * from aboutCalView;';
+    
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
     }
@@ -177,13 +200,11 @@
         $patient->ID=$_SESSION['patientID'];
     }
     if(!empty($clean)){
-        if($clean["passReset"]){//edit
-        try{
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->setAttribute(PDO::SQ, PDO::ERRMODE_EXCEPTION);
-            $pdo->beginTransaction();
+        if($clean["passReset"]){
             $query='UPDATE UserData SET Pass="'.password_hash($clean["password"],PASSWORD_BCRYPT).'" where ID="'.$patient->ID.'";';
-            $pdo->exec($query);
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
             $file_name = ".htpasswd";
             $ret_array = file( $file_name );
             for($cnt=0;$cnt<count($ret_array);$cnt++){
@@ -192,15 +213,10 @@
                 }
             }
             file_put_contents($file_name, $ret_array);
-            $pdo->commit();
-        }catch(Exception $e){
-            $pdo->rollBack();
-            echo $e->getMessgae().'<br>';
-        }finally{
+            
             session_destroy();
             header('Location:../login.php');
             exit();
-        }
         }
         if(!empty($clean["holidayForm"])){
             for($cnt=0;$cnt<7;$cnt++){
@@ -218,9 +234,6 @@
             exit;
         }
         if(!empty($clean["addPatient"])){
-        try{
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->beginTransaction();
             $query='SELECT Email from UserData where ID="'.$patient->ID.'";';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
@@ -228,7 +241,9 @@
             $row=mysqli_fetch_array($result);
             if($clean["Email"]!=$row[0]){
                 $query2='UPDATE UserData SET Email="'.$clean["Email"].'" where ID="'.$patient->ID.'";';
-                $pdo->exec($query2);
+                if(!($result2=mysqli_query($link,$query2))){
+                    goto SQLerror;
+                }
             }
             
             $clean["Counsellors"]='';
@@ -248,7 +263,11 @@
             }
             for($cnt=0;$cnt<$addicNum;$cnt++){
                 if($clean["addictions".$cnt]==1){
-                    $clean["Addictions"].=1;
+                    if($clean["addicInterruptCheck".$cnt]==1){
+                        $clean["Addictions"].=2;
+                    }else{
+                        $clean["Addictions"].=1;
+                    }
                 }else{
                     $clean["Addictions"].=0;
                 }
@@ -268,7 +287,9 @@
                 }
             }
             $query.=' where ID="'.$patient->ID.'";';
-            $pdo->exec($query);
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
             $query='UPDATE '.$addicName[$_SESSION["nowAddic"]].'Data SET ';
             for($cnt=1;$cnt<count($patientAddicInfoName[0]);$cnt++){
                 if($cnt==count($patientAddicInfoName[0])-3){
@@ -281,17 +302,66 @@
             }
             
             $query.=' where ID="'.$patient->ID.'";';
-            $pdo->exec($query);
-            
-            $pdo->commit();
-        }catch(Exception $e){
-            $pdo->rollBack();
-            echo $e->getMessgae().'<br>';
-        }finally{
-            session_destroy();
-            header('Location:../login.php');
-            exit();
-        }
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            for($cnt=0;$cnt<$addicNum;$cnt++){
+                if($clean["addictions".$cnt]==1&&$clean['addicStartCounselling'.$cnt]==1){
+                    $query='SELECT count(*) from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ToDoNumber=0;';
+                    if(!($result=mysqli_query($link,$query))){
+                        goto SQLerror;
+                    }
+                    if($clean["addicInterruptCheck".$cnt]==1){
+                        if(!mysqli_fetch_array($result)){
+                            $query='INSERT into '.$addicName[$cnt].'Process values("'.$patient->ID.'","'.$today.'",0,0);';
+                            if(!($result=mysqli_query($link,$query))){
+                                goto SQLerror;
+                            }
+                        }
+                    }else{
+                        if($row=mysqli_fetch_array($result)){
+                            $file=fopen('text/toDoDefault.txt','r');
+                            $startToDoweek=array(0,0,0,0,0,0,0,0,0,0);
+                            $cnt2=0;
+                            while($line=substr(fgets($file),0,-1)){
+                                $lineContents=explode(" ",$line);
+                                for($cnt3=2;$cnt3<count($toDoName)+2;$cnt3++){
+                                    if($lineContents[$cnt3-2]>0&&$startToDoweek[$cnt3]==0){
+                                        $startToDoweek[$cnt3]=$cnt2;
+                                    }
+                                }
+                                $cnt2++;
+                            }
+                            fclose($file);
+                            $startToDoweek[2]=0;
+                            // if($cnt2-1>$_POST["addicRestartWeek".$cnt]){
+                            $tmpDate=date("Y-m-d",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+($cnt2-2-$_POST["addicRestartWeek".$cnt])*7,$_SESSION["Y"]));
+                            $query='UPDATE '.$addicName[$cnt].'Process SET StartDate="'.$tmpDate.'" where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=1;';
+                            if(!($result=mysqli_query($link,$query))){
+                                goto SQLerror;
+                            }
+                            // }
+                            for($cnt2=1;$cnt2<count($toDoName)+2;$cnt2++){
+                                if($cnt2==4||$cnt2==6||$cnt2==7||$cnt2==9){
+                                    // if($startToDoweek[$cnt2]>-$_POST["addicRestartWeek".$cnt]){}
+                                    $tmpDate=date("Y-m-d",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+($startToDoweek[$cnt2]-$_POST["addicRestartWeek".$cnt])*7,$_SESSION["Y"]));
+                                    $query='UPDATE '.$addicName[$cnt].'Process SET StartDate="'.$tmpDate.'" where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber='.$cnt2.';'; 
+                                    if(!($result=mysqli_query($link,$query))){
+                                        goto SQLerror;
+                                    }   
+                                }
+                            }
+
+                            $query='DELETE from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ToDoNumber=0;';
+                            if(!($result=mysqli_query($link,$query))){
+                                goto SQLerror;
+                            }
+                        }
+                    }
+                }
+            }
+            header('Location:observe.php');
+            exit;
         }
         if(!empty($clean['updateThisFrontCoverBBS'])){
             $query='update frontCoverBBS set BBSstatus='.$clean["FrontCoverBBSBBSstatus"].',TextContents="'.$clean["FrontCoverBBSTextContents"].'" where Num='.$clean["FrontCoverBBSNum"].';';
@@ -316,7 +386,6 @@
             exit;
         }
     }
-    
     
     $query='SELECT * from PatientData where ID="'.$patient->ID.'";';
     if(!($result=mysqli_query($link,$query))){
@@ -345,19 +414,25 @@
     if(empty($_SESSION["hospital"])){
         $_SESSION["hospital"]=$patient->Hospital;
     }
-    $query='SELECT ID,HospitalName from aboutHospital;';
-    if(!($result=mysqli_query($link,$query))){
-        goto SQLerror;
-    }
-    while ($row = mysqli_fetch_array($result)) {
-        if($_SESSION["rank"]==0){
-            array_push($hospitalNameJP,$row[1]);
-        }else{
-            if($row[0]==$_SESSION["hospital"]){
-                array_push($hospitalNameJP,$row[1]);
+    $file=fopen('text/hospitalName.txt','r');
+    if($_SESSION["class"]==1&&$_SESSION["rank"]==0){
+        $cnt=0;
+        while($line=substr(fgets($file),0,-1)){
+            array_push($hospitalNameJP,$line);
+            $cnt++;
+        }
+        $hospitalNum=$cnt;
+    }else{
+        $cnt=0;
+        while($line=substr(fgets($file),0,-1)){
+            if($cnt==$_SESSION["hospital"]){
+                array_push($hospitalNameJP,$line);
+                $cnt++;
             }
         }
+        $hospitalNum=1;
     }
+    fclose($file);
     $counsellors=array();
     for($cnt2=0;$cnt2<$hospitalNum;$cnt2++){
         array_push($counsellors,[]);
@@ -373,6 +448,7 @@
     while ($row = mysqli_fetch_array($result)) {
         array_push($counsellors[$row[2]],$row);
     }
+    
     // if(mb_strlen($patientBasicInfoName[1][5])>$longestPatientInfoName){
     //     $longestPatientInfoName=mb_strlen($patientBasicInfoName[1][5]);
     // }
@@ -391,6 +467,15 @@
     //         $longestPatientInfoName=mb_strlen($patientBasicInfoName[1][$cnt]);
     //     }
     // }
+    $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'BBS where ID="'.$patient->ID.'" ORDER BY Num DESC;';
+    if(!($result=mysqli_query($link,$query))){
+        goto SQLerror;
+    }
+    $newestBBSis=0;
+    if($row = mysqli_fetch_array($result)){
+        $newestBBS=$row[4];
+    }
+    
     $query='SELECT * from frontCoverBBS where ID="'.$patient->ID.'" ORDER BY Num DESC;';
     $frontCoverBBSData=array();
     if(!($result=mysqli_query($link,$query))){
@@ -417,6 +502,7 @@
             array_push($frontCoverBBS,$row[5]);
         }
     }
+    
     if(!empty($clean)){
         if(!empty($clean["tests"])){
             for($cnt=0;$cnt<count($testNameJP);$cnt++){
@@ -524,7 +610,7 @@
                 $cnt++;
             }
             fclose($file);
-            $startToDoweek[1]=$cnt-1;
+            $startToDoweek[1]=$cnt-2;
             $tmpArray=array([4,1],[6,1],[7,1],[1,2]);
             for($cnt=0;$cnt<count($tmpArray)-1;$cnt++){
                 if($clean["toDoDateChange"]==$tmpArray[$cnt][0]){
@@ -577,12 +663,14 @@
             exit();
         }
     }
+    
     $err_msg=array();
     $sex=array('','男','女');
     $week = array('日','月','火','水','木','金','土');
     $next_date=date("Y-m-d",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"]+1,$_SESSION["Y"]));
     $now_monthJP = date("Y年n月",mktime(0,0,0,$_SESSION["m"]+$_SESSION["mDelay"],1,$_SESSION["Y"])); //表示する年月
     $now_dateJP = date("Y年n月d日",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"],$_SESSION["Y"]));
+    $todayJP= date("Y年n月d日",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"],$_SESSION["Y"]));
     $now_week = date("w",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"],$_SESSION["Y"]));
     $start_date = date('Y-m-01',mktime(0,0,0,$_SESSION["m"]+$_SESSION["mDelay"],1,$_SESSION["Y"])); //開始の年月日
     $end_date = date("Y-m-t",mktime(0,0,0,$_SESSION["m"]+$_SESSION["mDelay"],1,$_SESSION["Y"])); //終了の年月日
@@ -646,8 +734,6 @@
             $longestPatientInfoName=mb_strlen($patientAddicInfoName[1][$cnt]);
         }
     }
-    
-    
     if(!empty($clean)){
         if(!empty($clean["plusOk"])){
             $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Calendor values("'.$patient->ID.'","'.date("Y-m-d H:i:s",mktime($clean["startHourSelect"],$clean["startMinuteSelect"]*10,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"],$_SESSION["Y"])).'","'.date("Y-m-d H:i:s",mktime($clean["endHourSelect"],$clean["endMinuteSelect"]*10,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"],$_SESSION["Y"])).'"';
@@ -704,10 +790,7 @@
         }
     
         if(!empty($clean["FunEventsAbstractForm"])){
-        try{
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->beginTransaction();
-            $query='SELECT Num from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=0;';
+            $query='SELECT Num from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -717,95 +800,114 @@
             }
             $saveOrComplete=$clean["FunEventsAbstractSaveComplete"];
             $cnt=$clean["FunEventsAbstractSaveCompleteNum"];
+            $query='SELECT MAX(Num) from FunEvents where ID="'.$patient->ID.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            $row=mysqli_fetch_array($result);
+            $biggestFunAbNum=$row[0]+1;
+            if($cnt<count($notOkFunEventsAbstractNumber)){
             if($saveOrComplete==1){
-                $query='update '.$addicName[$_SESSION["nowAddic"]].'FunEvents SET StartDate="'.$now_date.'",Abstract="'.$clean['FunEventsAbstractInput'.$cnt].'" where ID="'.$patient->ID.'" and Num='.$notOkFunEventsAbstractNumber[$cnt].';';
-                $pdo->exec($query);
-                break;
+                $query='update FunEvents SET StartDate="'.$now_date.'",Abstract="'.$clean['FunEventsAbstractInput'.$cnt].'" where ID="'.$patient->ID.'" and Num='.$notOkFunEventsAbstractNumber[$cnt].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
             }else if($saveOrComplete==2){
-                $query='update '.$addicName[$_SESSION["nowAddic"]].'FunEvents SET StartDate="'.$now_date.'",AbstractOk=1,Abstract="'.$clean['FunEventsAbstractInput'.$cnt].'" where ID="'.$patient->ID.'" and Num='.$notOkFunEventsAbstractNumber[$cnt].';';
-                $pdo->exec($query);
-                break;
-            }
-            $query='SELECT Num from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'";';
-            $biggestFunAbNum=0;
-            if(!($result=mysqli_query($link,$query))){
-                goto SQLerror;
-            }
-            while($row=mysqli_fetch_array($result)){
-                if($biggestFunAbNum<$row[0]){
-                    $biggestFunAbNum=$row[0];
+                $query='update FunEvents SET StartDate="'.$now_date.'",AbstractOk=1,Abstract="'.$clean['FunEventsAbstractInput'.$cnt].'" where ID="'.$patient->ID.'" and Num='.$notOkFunEventsAbstractNumber[$cnt].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
                 }
             }
-            $biggestFunAbNum+=1;
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
-            if(!($result=mysqli_query($link,$query))){
-                goto SQLerror;
+            }else{
+                
+                if($saveOrComplete==1){
+                    $query='INSERT into FunEvents values("'.$patient->ID.'","'.$biggestFunAbNum.'","'.$now_date.'","0000-00-00",0,"'.$clean['FunEventsAbstractInput'.$cnt].'",0,"");';
+                    if(!($result=mysqli_query($link,$query))){
+                        goto SQLerror;
+                    }
+                }else if($saveOrComplete==2){
+                    $query='INSERT into FunEvents values("'.$patient->ID.'","'.$biggestFunAbNum.'","'.$now_date.'","0000-00-00",1,"'.$clean['FunEventsAbstractInput'.$cnt].'",0,"");';
+                    if(!($result=mysqli_query($link,$query))){
+                        goto SQLerror;
+                    }
+                }   
             }
+            // while($row=mysqli_fetch_array($result)){
+            //     if($biggestFunAbNum<$row[0]){
+            //         $biggestFunAbNum=$row[0];
+            //     }
+            // }
+            // $biggestFunAbNum=$row[0]+1;
+            // $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+            // if(!($result=mysqli_query($link,$query))){
+            //     goto SQLerror;
+            // }
             // for($cnt=count($notOkFunEventsAbstractNumber);$cnt<$nowDateToDo[2];$cnt++){
-            $cnt=mysqli_fetch_array($result)[0];
-                if(!empty($clean['FunEventsAbstractSave'.$cnt])){
-                    $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'FunEvents values("'.$patient->ID.'","'.$biggestFunAbNum.'","'.$now_date.'","0000-00-00",0,"'.$clean['FunEventsAbstractInput'.$cnt].'",0,"");';
-                    $pdo->exec($query);
-                }
-                if(!empty($clean['FunEventsAbstractComplete'.$cnt])){
-                    $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'FunEvents values("'.$patient->ID.'","'.$biggestFunAbNum.'","'.$now_date.'","0000-00-00",1,"'.$clean['FunEventsAbstractInput'.$cnt].'",0,"");';
-                    $pdo->exec($query);
-                }
+            // $cnt=mysqli_fetch_array($result)[0];
+            //     if(!empty($clean['FunEventsAbstractSave'.$cnt])){
+            //         $query='INSERT into FunEvents values("'.$patient->ID.'","'.$biggestFunAbNum.'","'.$now_date.'","0000-00-00",0,"'.$clean['FunEventsAbstractInput'.$cnt].'",0,"");';
+            //         // if(!($result=mysqli_query($link,$query))){
+            //         //     goto SQLerror;
+            //         // }
+            //     }
+            //     if(!empty($clean['FunEventsAbstractComplete'.$cnt])){
+            //         $query='INSERT into FunEvents values("'.$patient->ID.'","'.$biggestFunAbNum.'","'.$now_date.'","0000-00-00",1,"'.$clean['FunEventsAbstractInput'.$cnt].'",0,"");';
+            //         // if(!($result=mysqli_query($link,$query))){
+            //         //     goto SQLerror;
+            //         // }
+            //     }
             // }
             //50check
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and AbstractOk=1;';
+            $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and AbstractOk=1;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
             $row=mysqli_fetch_array($result);
             if($row[0]>=$toDoSum[0][1]){
-                $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$now_date.'",2,2);';
-                $pdo->exec($query);
+                $query='INSERT into Process values("'.$patient->ID.'","'.$now_date.'",2,2);';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
                 $tmpDate=date("Y-m-d",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"]+1,$_SESSION["Y"]));
-                $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",1,3);';
-                $pdo->exec($query);
+                $query='INSERT into Process values("'.$patient->ID.'","'.$tmpDate.'",1,3);';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
             }
-            $pdo->commit();
-        }catch(Exception $e){
-            $pdo->rollBack();
-            echo $e->getMessgae().'<br>';
-        }finally{
             header('Location:observe.php');
             exit;
         }
-        }
         if(!empty($clean["FunEventsConcreteForm"])){
-        try{
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->beginTransaction();    
             if($clean['FunEventsConcreteSaveComplete']==1){
-                $query='update '.$addicName[$_SESSION["nowAddic"]].'FunEvents SET Concrete="'.$clean['FunEventsConcrete'].'",EndDate="'.$now_date.'" where ID="'.$patient->ID.'" and Num='.$clean['selecedFunEventsConcrete'].';';
-                $pdo->exec($query);
+                $query='update FunEvents SET Concrete="'.$clean['FunEventsConcrete'].'",EndDate="'.$now_date.'" where ID="'.$patient->ID.'" and Num='.$clean['selecedFunEventsConcrete'].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
             }else if($clean['FunEventsConcreteSaveComplete']==2){
-                $query='update '.$addicName[$_SESSION["nowAddic"]].'FunEvents SET ConcreteOk=1,Concrete="'.$clean['FunEventsConcrete'].'",EndDate="'.$now_date.'" where ID="'.$patient->ID.'" and Num='.$clean['selecedFunEventsConcrete'].';';
-                $pdo->exec($query);
+                $query='update FunEvents SET ConcreteOk=1,Concrete="'.$clean['FunEventsConcrete'].'",EndDate="'.$now_date.'" where ID="'.$patient->ID.'" and Num='.$clean['selecedFunEventsConcrete'].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
             }
             //50check
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1;';
+            $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
             $row=mysqli_fetch_array($result);
             if($row[0]>=$toDoSum[1][1]){
-                $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$now_date.'",2,3);';
-                $pdo->exec($query);
+                $query='INSERT into Process values("'.$patient->ID.'","'.$now_date.'",2,3);';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
                 $tmpDate=date("Y-m-d",mktime(0,0,0,$_SESSION["m"],$_SESSION["d"]+$_SESSION["dDelay"]+1,$_SESSION["Y"]));
-                $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",1,8);';
-                $pdo->exec($query);
+                $query='INSERT into Process values("'.$patient->ID.'","'.$tmpDate.'",1,8);';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
             }
-            $pdo->commit();
-        }catch(Exception $e){
-            $pdo->rollBack();
-            echo $e->getMessgae().'<br>';
-        }finally{
             header('Location:observe.php');
             exit;
-        }
         }
         if(!empty($clean["ControlStimulusSubmit"])){
             $query='update '.$addicName[$_SESSION["nowAddic"]].'ControlStimulus SET Num="'.$clean['nowDateControlStimulusSelect'].'" where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
@@ -816,12 +918,11 @@
             exit;
         }
         if(!empty($clean["EssayForm"])){
-        try{
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->beginTransaction(); 
             $InfoEssay=$clean['EssayInput'];
             $query='update '.$addicName[$_SESSION["nowAddic"]].'Data SET Essay="'.$clean['EssayInput'].'" where ID="'.$patient->ID.'";';
-            $pdo->exec($query);
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
             $query='SELECT EssayWrite from '.$addicName[$_SESSION["nowAddic"]].'Essay where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
@@ -832,47 +933,46 @@
             }else{
                 $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Essay values("'.$patient->ID.'","'.$now_date.'",1,0);';
             }
-            $pdo->exec($query);
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
             if(!empty($clean["EssayComplete"])){
                 $InfoEssayOk=1;
                 $query='update '.$addicName[$_SESSION["nowAddic"]].'Data SET EssayOk=1 where ID="'.$patient->ID.'";';
-                $pdo->exec($query);
-                $query='update '.$addicName[$_SESSION["nowAddic"]].'Data SET EssayOk=1 where ID="'.$patient->ID.'";';
-                $pdo->exec($query);
-                $file=fopen('text/toDoDefault.txt','r');
-                $cnt=0;
-                while($line=substr(fgets($file),0,-1)){
-                    $lineContents=explode(" ",$line);
-                    if($lineContents[7]>0){
-                        $startEssayReadDelay=$cnt;
-                        break;
-                    }
-                    $cnt++;
-                }
-                fclose($file);
-                $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=1;';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }
-                $row=mysqli_fetch_array($result);
-                $programStartDateTime=strtotime($row[0]);
-                $tmpDateTime=mktime(0,0,0,date('m',$programStartDateTime),date('d',$programStartDateTime)+$startEssayReadDelay*7,date('Y',$programStartDateTime));
-                if($now_dateTime>$tmpDateTime){
-                    $tmpDate=date("Y-m-d",$now_dateTime);
-                }else{
-                    $tmpDate=date("Y-m-d",$tmpDateTime);
-                }
-                $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",1,9);';
-                $pdo->exec($query);
+                
+                // $file=fopen('text/toDoDefault.txt','r');
+                // $cnt=0;
+                // while($line=substr(fgets($file),0,-1)){
+                //     $lineContents=explode(" ",$line);
+                //     if($lineContents[7]>0){
+                //         $startEssayReadDelay=$cnt;
+                //         break;
+                //     }
+                //     $cnt++;
+                // }
+                // fclose($file);
+                // $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=1;';
+                // if(!($result=mysqli_query($link,$query))){
+                //     goto SQLerror;
+                // }
+                // $row=mysqli_fetch_array($result);
+                // $programStartDateTime=strtotime($row[0]);
+                // $tmpDateTime=mktime(0,0,0,date('m',$programStartDateTime),date('d',$programStartDateTime)+$startEssayReadDelay*7,date('Y',$programStartDateTime));
+                // if($now_dateTime>$tmpDateTime){
+                //     $tmpDate=date("Y-m-d",$now_dateTime);
+                // }else{
+                //     $tmpDate=date("Y-m-d",$tmpDateTime);
+                // }
+                // $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",1,9);';
+                // if(!($result=mysqli_query($link,$query))){
+                //     goto SQLerror;
+                // }
             }
-            $pdo->commit();
-        }catch(Exception $e){
-            $pdo->rollBack();
-            echo $e->getMessgae().'<br>';
-        }finally{
             header('Location:observe.php');
             exit;
-        }
         }
 
         if(!empty($clean["PseudoActSubmit"])){
@@ -905,6 +1005,45 @@
                 $query.=',"'.$clean[$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'"';
             }
             $query.=');';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            header('Location:observe.php');
+            exit;
+        }
+        if(!empty($clean["PseudoActUpdate"])){
+            // $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'PseudoAct where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+            // if(!($result=mysqli_query($link,$query))){
+            //     goto SQLerror;
+            // }
+            // $row = mysqli_fetch_array($result);
+            // $tmp=$row[0]+1;
+            $query='Update '.$addicName[$_SESSION["nowAddic"]].'PseudoAct SET ';
+            for($cnt=0;$cnt<count($ObservationName[0]);$cnt++){
+                for($cnt2=0;$cnt2<count($ObservationName[1])-1;$cnt2++){
+                    if($cnt2==3){
+                        $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'='.$clean['Re'.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Select'].',';
+                    }else{
+                        $tmp='';
+                        for($cnt3=0;$cnt3<count($ObservationNameJP[2+$cnt2*2]);$cnt3++){
+                            if(!empty($clean['Re'.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Check'.$cnt3])){
+                                $tmp.=1;
+                            }else{
+                                $tmp.=0;
+                            }
+                        }
+                        $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'="'.$tmp.'",';
+                    }
+                }
+                $query.=' '.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'",';
+            }
+            for($cnt=0;$cnt<count($ObservationName[2]);$cnt++){
+                $query.=' '.$ObservationName[2][$cnt].'="'.$clean['Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'"';
+                if($cnt!=count($ObservationName[2])-1){
+                    $query.=',';
+                }
+            }
+            $query.=' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and Num="'.$clean["ObservationSelect"].'";';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -952,7 +1091,47 @@
             header('Location:observe.php');
             exit;
         }
-
+        if(!empty($clean["ImaginationUpdate"])){
+            // $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'Imagination where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+            // if(!($result=mysqli_query($link,$query))){
+            //     goto SQLerror;
+            // }
+            // $row = mysqli_fetch_array($result);
+            // $tmp=$row[0]+1;
+            $query='Update '.$addicName[$_SESSION["nowAddic"]].'Imagination SET ';
+            for($cnt=0;$cnt<count($ObservationName[0]);$cnt++){
+                for($cnt2=0;$cnt2<count($ObservationName[1])-1;$cnt2++){
+                    if($cnt2==3){
+                        $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'='.$clean['Re'.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Select'].',';
+                    }else{
+                        $tmp='';
+                        for($cnt3=0;$cnt3<count($ObservationNameJP[2+$cnt2*2]);$cnt3++){
+                            if(!empty($clean['Re'.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Check'.$cnt3])){
+                                $tmp.=1;
+                            }else{
+                                $tmp.=0;
+                            }
+                        }
+                        $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'="'.$tmp.'",';
+                    }
+                }
+                $query.=' '.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'",';
+            }
+            for($cnt=0;$cnt<count($ObservationName[2])-1;$cnt++){
+                $query.=' '.$ObservationName[2][$cnt].'="'.$clean['Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'",';
+            }
+            $query.='aboutWhat='.$clean["ReaboutWhatSelect"];
+            for($cnt=0;$cnt<20;$cnt++){
+                $tmp=$cnt+1;
+                $query.=',word'.$tmp.'="'.$clean['Re'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt].'"';
+            }
+            $query.=' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and Num='.$clean["ObservationSelect"].';';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            header('Location:observe.php');
+            exit;
+        }
         // if(!empty($clean["plusObservationForm"])){
         //     if($_SESSION["nowToDoView"]==6){
         //         $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'PseudoAct where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
@@ -1013,13 +1192,20 @@
             exit;
         }
         if(!empty($clean["FunEventsReadSubmit"])){
-            $query='Insert into '.$addicName[$_SESSION["nowAddic"]].'FunEventsRead values("'.$patient->ID.'","'.$now_date.'",'.$clean["FunEventsReadSelect"];
-            for($cnt=0;$cnt<20;$cnt++){
-                $query.=',"'.$clean["FunEventsRead".$cnt].'"';
-            }
-            $query.=');';
-            if(!($result=mysqli_query($link,$query))){
-                goto SQLerror;
+            if($clean["FunEventsReadWhat"]==1){
+                $query='UPDATE FunEvents SET Abstract="'.$clean["FunEventsReadAbstract"].'",Concrete="'.$clean["FunEventsReadConcrete"].'" where ID="'.$patient->ID.'" and Num='.$clean["FunEventsReadSelect"].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
+            }else if($clean["FunEventsReadWhat"]==2){
+                $query='Insert into FunEventsRead values("'.$patient->ID.'","'.$now_date.'",'.$clean["FunEventsReadSelect"];
+                for($cnt=0;$cnt<20;$cnt++){
+                    $query.=',"'.$clean["FunEventsRead".$cnt].'"';
+                }
+                $query.=');';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
             }
             header('Location:observe.php');
             exit;
@@ -1046,12 +1232,30 @@
             header('Location:observe.php');
             exit;
         }
+        if(!empty($clean["BBSUpdate"])){
+            $query='SELECT MAX(Num) from '.$addicName[$_SESSION["nowAddic"]].'BBS where ID="'.$patient->ID.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($clean["BBSUpdate"]==1){
+                $query='UPDATE '.$addicName[$_SESSION["nowAddic"]].'BBS set TextContents="'.$clean["updateBBSInput"].'" where ID="'.$patient->ID.'" and Num='.mysqli_fetch_array($result)[0].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
+            }else if($clean["BBSUpdate"]==2){
+                $query='DELETE from '.$addicName[$_SESSION["nowAddic"]].'BBS where ID="'.$patient->ID.'" and Num='.mysqli_fetch_array($result)[0].';';
+                if(!($result=mysqli_query($link,$query))){
+                    goto SQLerror;
+                }
+            }
+
+        }
     }
-$query='update '.$addicName[$_SESSION["nowAddic"]].'FunEvents SET StartDate="'.$today.'" where ID="'.$patient->ID.'" and AbstractOk=0;';
+$query='update FunEvents SET StartDate="'.$today.'" where ID="'.$patient->ID.'" and AbstractOk=0;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
-$query='update '.$addicName[$_SESSION["nowAddic"]].'FunEvents SET EndDate="'.$today.'" where ID="'.$patient->ID.'" and ConcreteOk=0;';
+$query='update FunEvents SET EndDate="'.$today.'" where ID="'.$patient->ID.'" and ConcreteOk=0;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1090,42 +1294,40 @@ if($patient->ID!=""&&!mysqli_fetch_array($result)){
         $cnt++;
     }
     $startToDoweek[2]=0;
-    $tmpDate=date("Y-m-d",mktime(0,0,0,$clean["startProcessM"],$clean["startProcessD"]+($cnt-1)*7,$clean["startProcessY"]));
+    $tmpDate=date("Y-m-d",mktime(0,0,0,$clean["startProcessM"],$clean["startProcessD"]+($cnt-2)*7,$clean["startProcessY"]));
     $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",2,1);';
-try{
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->beginTransaction(); 
-    $pdo->exec($query);
+    if(!($result=mysqli_query($link,$query))){
+        goto SQLerror;
+    }
     fclose($file);
     for($cnt=1;$cnt<count($toDoName)+2;$cnt++){
-        if($cnt!=3&&$cnt!=8&&$cnt!=9){
+        if($cnt!=3&&$cnt!=8){
             $tmpDate=date("Y-m-d",mktime(0,0,0,$clean["startProcessM"],$clean["startProcessD"]+$startToDoweek[$cnt]*7,$clean["startProcessY"]));
-            $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",1,'.$cnt.');';
-            $pdo->exec($query);
+            if($cnt==2){
+                $query='INSERT into Process values("'.$patient->ID.'","'.$tmpDate.'",1,'.$cnt.');';
+            }else{
+                $query='INSERT into '.$addicName[$_SESSION["nowAddic"]].'Process values("'.$patient->ID.'","'.$tmpDate.'",1,'.$cnt.');';    
+            }
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }   
         }
     }   
-    $pdo->commit();
-}catch(Exception $e){
-    $pdo->rollBack();
-    echo $e->getMessgae().'<br>';
-}finally{
-    header('Location:observe.php');
-    exit;
-}
 }
 
 $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'ToDo where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
 $tmpToDo= mysqli_fetch_array($result);
 
 
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and StartDate<="'.$now_date.'" and ProcessStatus=1 and ToDoNumber=3;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and StartDate<="'.$now_date.'" and ProcessStatus=1 and ToDoNumber=3;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
-if(!($row=mysqli_fetch_array($result))){
+if($row=mysqli_fetch_array($result)){
     if($tmpToDo[2]>0){
         $query='update '.$addicName[$_SESSION["nowAddic"]].'ToDo SET FunEventsAbstract=0 where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
         if(!($result=mysqli_query($link,$query))){
@@ -1134,7 +1336,7 @@ if(!($row=mysqli_fetch_array($result))){
     }
     goto FunEventsAbstractEnd;
 }
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=2;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=2;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1147,7 +1349,7 @@ if(($row=mysqli_fetch_array($result))&&strtotime($row[0])<$now_dateTime){
     }
     goto FunEventsAbstractEnd;
 }
-$query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and AbstractOk=1 and StartDate<"'.$now_date.'";';
+$query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and AbstractOk=1 and StartDate<"'.$now_date.'";';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1181,14 +1383,14 @@ if($row[0]+$tmpToDo[2]>$toDoSum[0][1]){
     }
     goto FunEventsAbstractEnd;
 }
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=2;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=2;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }   
 $tmpDate=strtotime(mysqli_fetch_array($result)[0]);
 $FunAbStartToNowWeek=(int)(($now_dateTime-$tmpDate)/(86400*7));
 $tmpDate=date("Y-m-d",mktime(0,0,0,date("m",$tmpDate),date("d",$tmpDate)+$FunAbStartToNowWeek*7,date("Y",$tmpDate)));
-$query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where AbstractOk=1 and StartDate>="'.$tmpDate.'" and StartDate<"'.$now_date.'";';
+$query='SELECT count(*) from FunEvents where AbstractOk=1 and StartDate>="'.$tmpDate.'" and StartDate<"'.$now_date.'";';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1211,7 +1413,7 @@ if($row[0]+$tmpToDo[2]>$toDoSum[0][0]){
     goto FunEventsAbstractEnd;
 }
 FunEventsAbstractEnd:
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=3;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=3;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1233,7 +1435,7 @@ if(strtotime($row[0])>$now_dateTime){
     }
     goto FunEventsEnd;
 }
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=3;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=3;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1261,7 +1463,7 @@ for($cnt=0;$cnt<count($toDoDefault);$cnt++){
     }
 }
 
-$query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1;';
+$query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1274,7 +1476,7 @@ if($row[0]+$tmpToDo[3]>$toDoSum[1][1]){
     }
     goto FunEventsEnd;
 }
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=3;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=3;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }   
@@ -1282,7 +1484,7 @@ $tmpDate=strtotime(mysqli_fetch_array($result)[0]);
 $FunStartToNowWeek=(int)(($now_dateTime-$tmpDate)/(86400*7));
 $tmpDate=date("Y-m-d",mktime(0,0,0,date("m",$tmpDate),date("d",$tmpDate)+$FunStartToNowWeek*7,date("Y",$tmpDate)));
 
-$query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ConcreteOk=1 and EndDate>="'.$tmpDate.'" and EndDate<"'.$now_date.'";';
+$query='SELECT count(*) from FunEvents where ConcreteOk=1 and EndDate>="'.$tmpDate.'" and EndDate<"'.$now_date.'";';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1427,7 +1629,7 @@ if($tmpToDo[5]!=0){
     }
 }
 EssayEnd:
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=8;';
+$query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=8;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
@@ -1446,11 +1648,22 @@ if(($row=mysqli_fetch_array($result))&&strtotime($row[0])<=$now_dateTime){
         }
     }
 }
-$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=9;';
+$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and StartDate<="'.$now_date.'" and ProcessStatus=1 and ToDoNumber=9;';
 if(!($result=mysqli_query($link,$query))){
     goto SQLerror;
 }
-if(($row=mysqli_fetch_array($result))&&strtotime($row[0])<=$now_dateTime){
+$ok=1;
+if(!mysqli_fetch_array($result)){
+    $ok=0;
+}
+$query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and StartDate<="'.$now_date.'" and  ProcessStatus=2 and ToDoNumber=1;';
+if(!($result=mysqli_query($link,$query))){
+    goto SQLerror;
+}
+if(!mysqli_fetch_array($result)){
+    $ok=0;
+}
+if($ok==1){
     if($tmpToDo[9]!=1){
         $query='update '.$addicName[$_SESSION["nowAddic"]].'ToDo SET '.$toDoName[7].'=1 where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
         if(!($result=mysqli_query($link,$query))){
@@ -1466,23 +1679,112 @@ if(($row=mysqli_fetch_array($result))&&strtotime($row[0])<=$now_dateTime){
     }
 }
 ToDoSetEnd:
-
-
+    if($_SESSION["dDelay"]>=0&&mb_substr($patient->Addictions,$_SESSION['nowAddic'],1)==2){
+        $query='update '.$addicName[$_SESSION["nowAddic"]].'ToDo SET ';
+        for($cnt=0;$cnt<count($toDoName);$cnt++){
+            $query.=$toDoName[$cnt].'=0';
+            if($cnt!=count($toDoName)-1){
+                $query.=',';
+            }
+        }
+        $query.=' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+        if(!($result=mysqli_query($link,$query))){
+            goto SQLerror;
+        }
+    }
     $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'ToDo where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
     }
     $nowDateToDo=mysqli_fetch_array($result);
+    $addicInterruptWeek=array_fill(0,$addicNum,0);
+    $addicStartCounselling=array_fill(0,$addicNum,0);
+    for($cnt=0;$cnt<$addicNum;$cnt++){
+        if((int)(substr($patient->Addictions,$cnt,1))==2){
+            $query='SELECT StartDate from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ToDoNumber=0;';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($row=mysqli_fetch_array($result)){
+                $tmpDate=$row[0];
+            }
+            $stage=0;
+            $query='SELECT * from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=1 and StartDate<="'.$tmpDate.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($row = mysqli_fetch_array($result)){
+                $stage=1;
+            }
+            $query='SELECT * from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=4 and StartDate<="'.$tmpDate.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($row = mysqli_fetch_array($result)){
+                $stage=2;
+            }
+            $query='SELECT * from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=6 and StartDate<="'.$tmpDate.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($row = mysqli_fetch_array($result)){
+                $stage=4;
+            }
+            $query='SELECT * from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=7 and StartDate<="'.$tmpDate.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($row = mysqli_fetch_array($result)){
+                $stage=5;
+            }
+            $query='SELECT * from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=1 and StartDate<="'.$tmpDate.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            if($row = mysqli_fetch_array($result)){
+                $stage=6;
+            }
+                
+            if($stage==6){
+                $addicInterruptWeek[$cnt]=count($toDoDefault)-2;
+            }else if($stage>=2){
+                $tmp=0;
+                $file=fopen('text/toDoDefault.txt','r');
+                $startToDoweek=array(0,0,0,0,0,0,0,0,0,0);
+                while($line=substr(fgets($file),0,-1)){
+                    $lineContents=explode(" ",$line);
+                    if($lineContents[$stage]>0){
+                        break;
+                    }
+                    $tmp++;
+                }
+                fclose($file);
+                $addicInterruptWeek[$cnt]=$tmp;
+            }
+        }
+        $query='SELECT * from '.$addicName[$cnt].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=1 and StartDate<="'.$today.'";';
+        if(!($result=mysqli_query($link,$query))){
+            goto SQLerror;
+        }
+        if($row = mysqli_fetch_array($result)){
+            $addicStartCounselling[$cnt]=1;
+        }
+    }
     $file=fopen('text/stage.txt','r');
     $line=substr(fgets($file),0,-1);
     $stageName=explode(" ",$line);
     fclose($file);
+    $stage=0;
+    if((int)(substr($patient->Addictions,$_SESSION["nowAddic"],1))==2){
+        $stage=1;
+        goto StageSelected;
+    }
     $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber=1 and StartDate<="'.$today.'";';
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
     }
     if($row = mysqli_fetch_array($result)){
-        $stage=5;
+        $stage=6;
         goto StageSelected;
     }
     $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=7 and StartDate<="'.$today.'";';
@@ -1490,7 +1792,7 @@ ToDoSetEnd:
         goto SQLerror;
     }
     if($row = mysqli_fetch_array($result)){
-        $stage=4;
+        $stage=5;
         goto StageSelected;
     }
     $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=6 and StartDate<="'.$today.'";';
@@ -1498,7 +1800,7 @@ ToDoSetEnd:
         goto SQLerror;
     }
     if($row = mysqli_fetch_array($result)){
-        $stage=3;
+        $stage=4;
         goto StageSelected;
     }
     $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=4 and StartDate<="'.$today.'";';
@@ -1506,7 +1808,7 @@ ToDoSetEnd:
         goto SQLerror;
     }
     if($row = mysqli_fetch_array($result)){
-        $stage=2;
+        $stage=3;
         goto StageSelected;
     }
     $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=1 and StartDate<="'.$today.'";';
@@ -1514,10 +1816,9 @@ ToDoSetEnd:
         goto SQLerror;
     }
     if($row = mysqli_fetch_array($result)){
-        $stage=1;
+        $stage=2;
         goto StageSelected;
     }
-    $stage=0;
 StageSelected:
 
     $startProcess=array(0);
@@ -1526,7 +1827,11 @@ StageSelected:
     $finishProcessDate=array(0);
     
     for($cnt=1;$cnt<count($nowDateToDo);$cnt++){
-        $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber='.$cnt.';';
+        if($cnt==2||$cnt==3||$cnt==8){
+            $query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber='.$cnt.';';
+        }else{
+            $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber='.$cnt.';';
+        }
         if(!($result=mysqli_query($link,$query))){
             goto SQLerror;
         }
@@ -1541,7 +1846,11 @@ StageSelected:
             array_push($startProcess,0);
             array_push($startProcessDate,0);
         }
-        $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber='.$cnt.';';
+        if($cnt==2||$cnt==3||$cnt==8){
+            $query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber='.$cnt.';';
+        }else{
+            $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=2 and ToDoNumber='.$cnt.';';
+        }
         if(!($result=mysqli_query($link,$query))){
             goto SQLerror;
         }
@@ -1564,31 +1873,55 @@ StageSelected:
         $showImaginationText=1;
     }
     $FunEveShow=array(0,0,0,0);
-    if($startProcessDate[2]!=0&&strtotime($startProcessDate[2])<=$now_dateTime){
-        if($finishProcessDate[2]==0||$now_dateTime<=strtotime($finishProcessDate[2])){
-        $FunEveShow[2]=1;
+
+    if($_SESSION["dDelay"]<0){
+        $query='SELECT count(*) from FunEvents where AbstractOk=1 and StartDate="'.$now_date.'";';
+        if(!($result=mysqli_query($link,$query))){
+            goto SQLerror;
+        }
+        if(mysqli_fetch_array($result)[0]>0){
+            $FunEveShow[2]=1;
+        }
+    }else if($_SESSION["dDelay"]==0){
+        if($startProcessDate[2]!=0&&strtotime($startProcessDate[2])<=$now_dateTime&&mb_substr($patient->Addictions,$_SESSION['nowAddic'],1)==1){
+            if($finishProcessDate[2]==0||$now_dateTime<=strtotime($finishProcessDate[2])){
+                $FunEveShow[2]=1;
+            }
         }
     }
-    if($startProcessDate[3]!=0&&strtotime($startProcessDate[3])<=$now_dateTime){
-        if($finishProcessDate[3]==0||$now_dateTime<=strtotime($finishProcessDate[3])){
-        $FunEveShow[3]=1;
+    if($_SESSION["dDelay"]<0){
+        $query='SELECT count(*) from FunEvents where ConcreteOk=1 and StartDate="'.$now_date.'";';
+        if(!($result=mysqli_query($link,$query))){
+            goto SQLerror;
+        }
+        if(mysqli_fetch_array($result)[0]>0){
+            $FunEveShow[3]=1;
+        }
+    }else if($_SESSION["dDelay"]==0){
+        if($startProcessDate[3]!=0&&strtotime($startProcessDate[3])<=$now_dateTime&&mb_substr($patient->Addictions,$_SESSION['nowAddic'],1)==1){
+            if($finishProcessDate[3]==0||$now_dateTime<=strtotime($finishProcessDate[3])){
+            $FunEveShow[3]=1;
+            }
         }
     }
+    
     $nowDateToDoOk=array();
     for($cnt=0;$cnt<count($toDoName);$cnt++){
         if($nowDateToDo[$cnt+2]>0){
             switch($cnt){
                 case 0:
-                    $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=1;';
+                    $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=1;';
                     break;       
                 case 1:
-                    $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].$toDoName[$cnt].' where ID="'.$patient->ID.'" and EndDate="'.$now_date.'" and ConcreteOk=1;';
+                    $query='SELECT count(*) from '.$toDoName[$cnt].' where ID="'.$patient->ID.'" and EndDate="'.$now_date.'" and ConcreteOk=1;';
                     break;
                 case 2:
                 case 4:
                 case 5:
-                case 6:
                     $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].$toDoName[$cnt].' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+                    break;
+                case 6:
+                    $query='SELECT count(*) from '.$toDoName[$cnt].' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
                     break;
                 case 3:
                     $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'Essay where ID="'.$patient->ID.'" and StartDate="'.$now_date.'"  and EssayWrite=1;';
@@ -1618,7 +1951,7 @@ StageSelected:
             $nowDateToDoAllOk=0;
         }
     }
-    $query='SELECT Concrete from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1;';
+    $query='SELECT Concrete from FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1;';
     $FunEventsAll=array();
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
@@ -1639,12 +1972,33 @@ StageSelected:
         $file='text/description/'.$toDoName[$_SESSION["nowToDoView"]-2].'Description.txt';
         $description=file_get_contents($file);
         fclose($file);
-        $file='text/instruction/'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction.txt';
-        $description=file_get_contents($file);
-        fclose($file);
+        if($_SESSION["nowToDoView"]==4||$_SESSION["nowToDoView"]==6||$_SESSION["nowToDoView"]==7){
+            if(${'Info'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction'}!=""){
+                $instruction=${'Info'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction'};
+            }else{
+                $file='text/instruction/'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction.txt';
+                $instruction=file_get_contents($file);
+                fclose($file);    
+            }
+        }else{
+            $file='text/instruction/'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction.txt';
+            $instruction=file_get_contents($file);
+            fclose($file);
+        }
     }
+
     // if($_SESSION["nowCalView"]==1){
         switch($_SESSION["nowToDoView"]){
+        case 0:   
+            if($stage==6){
+                $file='text/instruction/KeepInstruction.txt';
+                $instruction=file_get_contents($file);
+                fclose($file);
+                $file='text/description/KeepDescription.txt';
+                $description=file_get_contents($file);
+                fclose($file);//edit
+            }
+            break;
         case 1:
             $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Calendor where (ID="'.$patient->ID.'" and StartDateTime>="'.$now_date.' 00:00:00" and StartDateTime<="'.$now_date.' 23:50:00") or (ID="'.$patient->ID.'" and EndDateTime>="'.$now_date.' 00:00:00" and EndDateTime<="'.$now_date.' 23:50:00") ORDER BY StartDateTime ASC;';
             if(!($result=mysqli_query($link,$query))){
@@ -1703,14 +2057,14 @@ StageSelected:
             }
             break;
         case 2:
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and AbstractOk=1;';
+            $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and AbstractOk=1;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
             $row = mysqli_fetch_array($result);
             $completeFunAbSum=$row[0];
             
-            $query='SELECT Num from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'";';
+            $query='SELECT Num from FunEvents where ID="'.$patient->ID.'";';
             $biggestFunAbNum=0;
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
@@ -1722,7 +2076,7 @@ StageSelected:
             }
             $biggestFunAbNum+=1;
             if($_SESSION["dDelay"]==0&&$completeFunAbNum<$toDoSum[0][1]){
-                $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=2;';
+                $query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=2;';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }   
@@ -1730,7 +2084,7 @@ StageSelected:
                 $FunStartToNowWeek=(int)(($now_dateTime-$tmpDate)/(86400*7));
                 $tmpDate=date("Y-m-d",mktime(0,0,0,date("m",$tmpDate),date("d",$tmpDate)+$FunStartToNowWeek*7,date("Y",$tmpDate)));
 
-                $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where AbstractOk=1 and StartDate>="'.$tmpDate.'" and StartDate<="'.$now_date.'";';
+                $query='SELECT count(*) from FunEvents where AbstractOk=1 and StartDate>="'.$tmpDate.'" and StartDate<="'.$now_date.'";';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }
@@ -1742,20 +2096,20 @@ StageSelected:
                 }
                 
             }
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=1;';
+            $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=1;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
             $row = mysqli_fetch_array($result);
             $completeFunAbNum=$row[0];
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+            $query='SELECT count(*) from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
             $row = mysqli_fetch_array($result);
             $FunEventsAbstract=array();
             if($completeFunAbNum>=$nowDateToDo[$_SESSION["nowToDoView"]]){
-                $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=1 ORDER BY Num ASC;';
+                $query='SELECT * from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=1 ORDER BY Num ASC;';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }
@@ -1764,7 +2118,7 @@ StageSelected:
                         array_push($FunEventsAbstract,$row);
                     }
                 }
-                $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=0 ORDER BY Num ASC;';
+                $query='SELECT * from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" and AbstractOk=0 ORDER BY Num ASC;';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }
@@ -1772,7 +2126,7 @@ StageSelected:
                     array_push($FunEventsAbstract,$row);
                 }
             }else{
-                $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" ORDER BY Num ASC;';
+                $query='SELECT * from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$now_date.'" ORDER BY Num ASC;';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }
@@ -1789,7 +2143,7 @@ StageSelected:
             }
             break;
         case 3:
-            $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1 and EndDate="'.$now_date.'" ORDER BY Num ASC;';
+            $query='SELECT * from FunEvents where ID="'.$patient->ID.'" and ConcreteOk=1 and EndDate="'.$now_date.'" ORDER BY Num ASC;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -1798,7 +2152,7 @@ StageSelected:
                 array_push($completeFunEventsConcrete,$row);
             }
             if($_SESSION["dDelay"]==0&&$completeFunNum<$toDoSum[1][1]){
-                $query='SELECT StartDate from '.$addicName[$_SESSION["nowAddic"]].'Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=3;';
+                $query='SELECT StartDate from Process where ID="'.$patient->ID.'" and ProcessStatus=1 and ToDoNumber=3;';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }   
@@ -1806,7 +2160,7 @@ StageSelected:
                 $FunStartToNowWeek=(int)(($now_dateTime-$tmpDate)/(86400*7));
                 $tmpDate=date("Y-m-d",mktime(0,0,0,date("m",$tmpDate),date("d",$tmpDate)+$FunStartToNowWeek*7,date("Y",$tmpDate)));
 
-                $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ConcreteOk=1 and EndDate>="'.$tmpDate.'" and EndDate<="'.$now_date.'";';
+                $query='SELECT count(*) from FunEvents where ConcreteOk=1 and EndDate>="'.$tmpDate.'" and EndDate<="'.$now_date.'";';
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
                 }
@@ -1816,10 +2170,9 @@ StageSelected:
                 }else{
                     $remainFun=$toDoSum[1][0]-$row[0];
                 }
-                
             }
             $incompleteFunEventsConcrete=array();
-            $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and ConcreteOk=0 ORDER BY Num ASC;';
+            $query='SELECT * from FunEvents where ID="'.$patient->ID.'" and ConcreteOk=0 ORDER BY Num ASC;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -1943,7 +2296,7 @@ StageSelected:
             }
             break;
         case 8:
-            $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].$toDoName[$_SESSION["nowToDoView"]-2].' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
+            $query='SELECT * from '.$toDoName[$_SESSION["nowToDoView"]-2].' where ID="'.$patient->ID.'" and StartDate="'.$now_date.'";';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -1951,7 +2304,7 @@ StageSelected:
             while ($row = mysqli_fetch_array($result)) {
                 array_push($FunEventsRead,$row);
             }   
-            $query='SELECT Abstract,Concrete from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" ORDER BY Num ASC;';
+            $query='SELECT Abstract,Concrete from FunEvents where ID="'.$patient->ID.'" ORDER BY Num ASC;';
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -1959,7 +2312,7 @@ StageSelected:
             while ($row = mysqli_fetch_array($result)) {
                 array_push($FunEvents,$row);
             }
-            $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].$toDoName[$_SESSION["nowToDoView"]-2].' where ID="'.$patient->ID.'" and StartDate<"'.$now_date.'";';
+            $query='SELECT count(*) from '.$toDoName[$_SESSION["nowToDoView"]-2].' where ID="'.$patient->ID.'" and StartDate<"'.$now_date.'";';
             
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
@@ -2023,7 +2376,12 @@ StageSelected:
                         }
                         array_push($tmpTimesJP,$tmpThisTimeJP);
                     }
-                    array_push($monthContents,$tmpContents);
+                    if(count($tmpContents)>0){
+                        array_push($monthContents,$addicNameJP[$_SESSION["nowAddic"]]);
+                    }else{
+                        array_push($monthContents,'');
+                    }
+                    
                     array_push($monthTimesJP,$tmpTimesJP);
                 }
                 
@@ -2031,13 +2389,13 @@ StageSelected:
             case 2:
                 for($i=1; $i<=$month_DaysNum; $i++){
                     $tmpContents=array();
-                    $query='SELECT Num from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and StartDate="'.$month_Days[$i].'" and AbstractOk=1;';
+                    $query='SELECT Num from FunEvents where ID="'.$patient->ID.'" and StartDate="'.$month_Days[$i].'" and AbstractOk=1;';
                     if(!($result=mysqli_query($link,$query))){
                         goto SQLerror;
                     }
                     while ($row = mysqli_fetch_array($result)) {
                         $tmp=$row[0]+1;
-                        array_push($tmpContents,$tmp.'番を完成');
+                        array_push($tmpContents,$tmp.'完');
                     }
                     array_push($monthContents,$tmpContents);
                 }
@@ -2046,13 +2404,13 @@ StageSelected:
             case 3:
                 for($i=1; $i<=$month_DaysNum; $i++){
                     $tmpContents=array();
-                    $query='SELECT Num from '.$addicName[$_SESSION["nowAddic"]].'FunEvents where ID="'.$patient->ID.'" and EndDate="'.$month_Days[$i].'" and ConcreteOk=1;';
+                    $query='SELECT Num from FunEvents where ID="'.$patient->ID.'" and EndDate="'.$month_Days[$i].'" and ConcreteOk=1;';
                     if(!($result=mysqli_query($link,$query))){
                         goto SQLerror;
                     }
                     while ($row = mysqli_fetch_array($result)) {
                         $tmp=$row[0]+1;
-                        array_push($tmpContents,$tmp.'番を完成');
+                        array_push($tmpContents,$tmp.'完');
                     }
                     array_push($monthContents,$tmpContents);
                 }
@@ -2141,17 +2499,17 @@ StageSelected:
             case 8:
                 for($i=1; $i<=$month_DaysNum; $i++){
                     $tmpContents=array();
-                    $query='SELECT Num from '.$addicName[$_SESSION["nowAddic"]].'FunEventsRead where ID="'.$patient->ID.'" and StartDate="'.$month_Days[$i].'";';
+                    $query='SELECT Num from FunEventsRead where ID="'.$patient->ID.'" and StartDate="'.$month_Days[$i].'";';
                     if(!($result=mysqli_query($link,$query))){
                         goto SQLerror;
                     }
                     while ($row = mysqli_fetch_array($result)) {
                         $tmp=$row[0]+1;
-                        array_push($tmpContents,$tmp.'番を読み返した');
+                        array_push($tmpContents,$tmp.'番');
                     }
                     array_push($monthContents,$tmpContents);
                 }
-                $query='SELECT count(*) from '.$addicName[$_SESSION["nowAddic"]].$toDoName[$_SESSION["nowToDoView"]-2].' where ID="'.$patient->ID.'" and StartDate<"'.$month_Days[1].'";';
+                $query='SELECT count(*) from '.$toDoName[$_SESSION["nowToDoView"]-2].' where ID="'.$patient->ID.'" and StartDate<"'.$month_Days[1].'";';
                 
                 if(!($result=mysqli_query($link,$query))){
                     goto SQLerror;
