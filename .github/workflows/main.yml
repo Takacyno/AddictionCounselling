@@ -1,0 +1,27 @@
+name: Assign Project to New Issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  assign_project:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Assign issue to project
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const projectId = 1;
+          const issueNumber = context.issue.number;
+
+          const result = await github.projects.createCard({
+            column_id: projectId,
+            content_id: issueNumber,
+            content_type: 'Issue'
+          });
+
+          console.log(`Assigned issue #${issueNumber} to project #${projectId}`);
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
