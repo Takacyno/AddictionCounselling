@@ -1,4 +1,0 @@
-AuthType Basic
-AuthUserFile /home/home10/public_html/takayuki/Counselling/.htpasswd
-AuthName "Please enter your ID and password"
-Require valid-user
