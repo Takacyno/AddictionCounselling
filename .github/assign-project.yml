@@ -9,6 +9,6 @@ jobs:
     steps:
       - uses: alex-page/github-project-automation-plus@v0.3.0
         with:
-          project: mind-nature-PHP
+          project: mind-nature-project
           column: Todo
           repo-token: ${{ secrets.GH_TOKEN }}
