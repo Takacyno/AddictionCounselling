@@ -1,0 +1,94 @@
+header{
+    margin:40px;
+    background-color: white;
+    border-bottom: 3px solid;
+    border-color: #000;
+    display: flex;
+    justify-content:space-between;
+    vertical-align: middle;
+    }
+    #goPatientSelect{
+        display: inline-block;
+        background-color: white;
+        margin :0%;
+        width:100%;
+      }
+#plusMenu {
+    padding: 12px;
+    margin-left: 0%;
+    background: white;
+    display: inline-block;
+  }
+  #plusCheck, #plusClose { display:none; }
+  #plusOpen {
+  display: inline-block;
+  cursor: pointer;
+  
+  }
+  #plusOpen:hover {
+  opacity: 0.5;
+  }
+  #plusOpen { display: inline-block; }
+  #plusClose, #plusDiv{
+  position: fixed;
+  right:0;
+  top: 0;
+  height: 100%;
+  }
+  #plusClose {
+  z-index: 2;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #plusDiv{
+  z-index: 3;
+  width: 600px;
+  background: gray;
+  transition: 0.5s;
+  transform: translateX(+100%);
+  overflow: auto;
+  }
+  #plusCheck:checked ~ #plusClose { display: inline-block; }
+  #plusCheck:checked ~ #plusDiv{
+  transform: translateX(0);
+  }
+  .btn{
+    border:none;
+    background-color: white;
+  }
+  .patientBtn{
+    background-color: white;
+    margin :0%;
+    border:0%;
+    cursor: pointer;
+    width:100%;
+    height:100%;
+    border-color: white;
+    text-align: left;
+  }
+  .list{
+    overflow: auto;
+    list-style: none;
+  }
+
+  .canPush:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+.Red{
+    color: red;
+}
+.Block{
+    display: block;
+}
+.inlineBlock{
+    display: inline-block;
+}
+.none{
+    display: none;
+}
+textarea{
+    vertical-align: top;
+  }

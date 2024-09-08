@@ -1,0 +1,2 @@
+Severity StartDate ProgramStartDate Progress Difficulties Frequency Trouble Methods AddicGoal ControlStimulusText ControlStimulusInstruction PseudoActInstruction ImaginationInstruction EssayOk Essay AddicSupplement
+重症度 症状の開始日 カウンセリング開始日 経過 生活上困っていること 頻度 症状によるトラブル 行動の方法 症状に関する目標 制御刺激文 制御刺激のやり方 疑似行為のやり方 想像のやり方 描写文OK 描写文 補足

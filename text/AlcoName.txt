@@ -1,0 +1,10 @@
+Beer Highball Strong JPRiceWine Wine Shochu Whisky
+ビール ハイボール ストロング缶 日本酒 ワイン 焼酎 ウイスキー
+1 2 3 4 5 6 7 8 9 10~ 300~400 400~500 500~700 7000~1000 1000~
+缶 杯 ビン ml
+缶 杯 ml
+缶 杯 ml
+合 杯 ml
+杯 ml
+杯 ml
+杯 ml

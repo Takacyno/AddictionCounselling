@@ -1,0 +1,28 @@
+header{
+    margin:40px;
+    background-color: white;
+    border-bottom: 3px solid;
+    border-color: #000;
+    display: flex;
+    justify-content:space-between;
+    vertical-align: middle;
+}
+.goObserveLabel{
+  display: inline-block;
+  background-color: white;
+  margin :0%;
+  width:100%;
+}
+.none{
+    display: none;
+}
+.canPush:hover {
+opacity: 0.5;
+cursor: pointer;
+}
+.inline{
+  display: inline;
+}
+.red{
+  color: red;
+}
