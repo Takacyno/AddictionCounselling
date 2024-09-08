@@ -1,5 +1,5 @@
-.htaccess
-.htpasswd
+Counselling/.htaccess
+Counselling/.htpasswd
 SQLscript.sql
-old/
-PHPMailer-master/
+Counselling/old/
+Counselling/PHPMailer-master/
