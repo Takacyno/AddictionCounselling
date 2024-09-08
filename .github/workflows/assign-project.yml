@@ -10,5 +10,5 @@ jobs:
       - uses: alex-page/github-project-automation-plus@v0.3.0
         with:
           project: mind-nature-project
-          column: Todo
+          column: 1
           repo-token: ${{ secrets.GH_TOKENCLASSIC }}
