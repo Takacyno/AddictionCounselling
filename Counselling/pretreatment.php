@@ -29,11 +29,19 @@
         //     }
         // }
 
-    $DBhost='133.18.244.234';
-    $DBusername='home10';
-    $DBpassword='8940hakuyo';
-    $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-    $db=mysqli_select_db($link,"takayuki");
+    if($host=="localhost"){
+        $DBhost='localhost';
+        $DBusername='root';
+        $DBpassword='local';
+        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
+        $db=mysqli_select_db($link,"local");
+    }else{
+        $DBhost='133.18.244.234';
+        $DBusername='home10';
+        $DBpassword='8940hakuyo';
+        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
+        $db=mysqli_select_db($link,"takayuki");
+    }
     // サニタイズ
     $clean = array();
 
