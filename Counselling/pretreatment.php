@@ -1,6 +1,6 @@
+<?php include('DBconnect.php');?>    
 <?php
     
-        session_start();
         // // セッションのライフタイム変更
         // ini_set( 'session.gc_maxlifetime', 60 );  // 秒(デフォルト:1440)
         
@@ -28,20 +28,7 @@
         //         //$this->session->set("created", new DateTime('now'));
         //     }
         // }
-
-    if($host=="localhost"){
-        $DBhost='localhost';
-        $DBusername='root';
-        $DBpassword='local';
-        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-        $db=mysqli_select_db($link,"local");
-    }else{
-        $DBhost='133.18.244.234';
-        $DBusername='home10';
-        $DBpassword='8940hakuyo';
-        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-        $db=mysqli_select_db($link,"takayuki");
-    }
+        
     // サニタイズ
     $clean = array();
 
