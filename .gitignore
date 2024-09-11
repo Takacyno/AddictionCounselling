@@ -1,0 +1,13 @@
+Counselling/.htaccess
+Counselling/.htpasswd
+Counselling/old/
+Counselling/PHPMailer-master/
+dashboard/
+img/
+webalizer/
+xampp/
+applications.html
+bitnami.css
+favicon.ico
+index.php
+SQLscript.sql

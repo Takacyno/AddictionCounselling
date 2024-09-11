@@ -1,0 +1,1310 @@
+body{
+    display: block;
+}
+main{
+margin:40px;
+}
+header{
+margin:20px;
+background-color: white;
+border-bottom: 5px solid;
+border-color: #006633;
+display: flex;
+justify-content:space-between;
+vertical-align: middle;
+}
+
+section{
+margin:20px;
+background-color: white;
+display: flex;
+justify-content: space-around;
+vertical-align: middle;
+}
+textarea{
+  width: 100%;
+}
+
+/* 前、次ボタン */
+#prev,#next{
+    display:none;    
+}
+#prevLabel,#nextLabel,#space{
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+}
+/* 日、月ボタン */
+#calendorSelect{
+  width: 60px;
+  height: 40px;
+  background-color: white;
+}
+/* 詳細情報 */
+#infoMenu {
+  padding: 12px;
+  margin-left: 0%;
+  background: white;
+  }
+  #infoCheck, #infoClose { display:none; }
+  #infoOpen {
+  display: block;
+  cursor: pointer;
+  border:solid 1px black;
+  }
+  #infoOpen:hover {
+  opacity: 0.5;
+  }
+  #infoOpen { display: inline-block; }
+  #infoClose, #info {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  }
+  #infoClose {
+  z-index: 2;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #info{
+  z-index: 3;
+  width: 90%;
+  background: white;
+  transition: 0.5s;
+  transform: translateX(+200%);
+  overflow: auto;
+  }
+  #infoCheck:checked ~ #infoClose { display: inline-block; }
+  #infoCheck:checked ~ #info{
+  transform: translateX(0);
+  }
+  /*詳細情報変更*/
+  #infoUpdateCheck, #infoUpdateClose { display:none; }
+  #infoUpdateOpen {
+  display: block;
+  cursor: pointer;
+  border:solid 1px black;
+  }
+  #infoUpdateOpen:hover {
+  opacity: 0.5;
+  }
+  #infoUpdateOpen { display: inline-block; }
+  #infoUpdateClose, #infoUpdate {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  }
+  #infoUpdateClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #infoUpdate{
+  z-index: 5;
+  width: 90%;
+  background: white;
+  transition: 0.5s;
+  transform: translateX(+200%);
+  overflow-y: auto;
+  }
+  #infoUpdateCheck:checked ~ #infoUpdateClose { display: inline-block; }
+  #infoUpdateCheck:checked ~ #infoUpdate{
+  transform: translateX(0);
+  }
+/*カウンセラー追加*/
+#plusCounsellorCheck, #plusCounsellorClose { display:none; }
+#plusCounsellorOpen {
+display: inline-block;
+cursor: pointer;
+
+}
+#plusCounsellorOpen:hover {
+opacity: 0.5;
+}
+#plusCounsellorOpen { display: inline-block; }
+#plusCounsellorClose, #plusCounsellorDiv{
+position: fixed;
+right:0;
+top: 0;
+height: 100%;
+}
+#plusCounsellorClose {
+z-index: 6;
+width: 100%;
+background: gray;
+opacity: 0.8;
+transition: 0.5s;
+}
+#plusCounsellorDiv{
+z-index: 7;
+width: 90%;
+background: white;
+transition: 0.5s;
+transform: translateX(+100%);
+overflow: auto;
+display: none;
+}
+#plusCounsellorCheck:checked ~ #plusCounsellorClose { display: inline-block; }
+#plusCounsellorCheck:checked ~ #plusCounsellorDiv{
+transform: translateX(0);
+display: inline-block;
+}
+
+/* ナビゲーション*/  
+#humMenu {
+padding: 12px;
+margin-left: 0%;
+background: white;
+}
+#humCheck, #humClose { display:none; }
+#humOpen {
+display: block;
+width: 58px;
+cursor: pointer;
+}
+#humOpen:hover {
+opacity: 0.5;
+}
+#humOpen img { display: inline-block; }
+#humClose, nav {
+position: fixed;
+left: 0;
+top: 0;
+height: 100%;
+}
+#humClose {
+z-index: 2;
+width: 100%;
+background: gray;
+opacity: 0.8;
+transition: 0.5s;
+}
+nav {
+z-index: 3;
+width: 300px;
+background: white;
+transition: 0.5s;
+transform: translateX(-100%);
+}
+#humCheck:checked ~ #humClose { display: inline-block; }
+#humCheck:checked ~ nav {
+transform: translateX(0);
+}
+ol{
+overflow: auto;
+list-style: none;
+}
+nav li{
+padding: 15px 0;
+margin: 10px 0;
+}
+nav li:hover{
+opacity: 0.5;
+}
+nav li a{
+font-size: 20px;
+text-decoration: none;
+font-size: 20px;
+color: black;
+}
+.toDoNav{
+  background-color: white;
+  margin :0%;
+  border:0%;
+  cursor: pointer;
+  width:100%;
+  height:100%;
+  border-color: white;
+  text-align: left;
+}
+/* 患者選択画面に戻るボタン ?*/
+.goPatientSelectLabel{
+  display: inline-block;
+  background-color: white;
+  margin :0%;
+  width:100%;
+  border: 1px solid;
+}
+/* チャット*/
+.BBS{
+  overflow: auto;
+  width: 70%;
+  height: 600px;
+}
+.hisBBS{
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+.yourBBS{
+  display: block;
+  width: 100%;
+  text-align: right;
+}
+.hisMessage{
+  display: inline-block;
+  text-align: left;
+}
+.patientMessage{
+  display: inline-block;  
+  text-align: left;
+  background-color: rgb(0, 187, 255);
+}
+.yourMessage{
+  display: inline-block;
+  text-align: left;
+  background-color: rgb(127, 255, 170);
+}
+
+/*その日にやることフォーム*/
+#nowDateToDo,#nowDateToDoDefault,#toDoProcessForm{
+  background-color: grey;
+  width: fit-content;
+  height: fit-content;
+  margin-right: auto;  
+  margin-bottom: auto;
+}
+
+/*ログアウトラベル*/
+#logOutLabel{
+  display: inline-block;
+}
+#logOutLabel:hover,#goPatientSelect:hover,#prevLabel:hover,#nextLabel:hover{
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+
+/*日カレンダー*/
+.halfRow{
+  height: 100vh / 48vh;
+}
+.whatTime{
+  height: 100vh / 24vh;
+}
+.time{
+  width:70%;
+  height: 100%;  
+}
+
+#dayCal {
+  height: 100vh;
+  border-collapse: collapse;
+  text-align: center;
+  border: 1px;
+}
+#dayCal,#nowDateToDo,#nowDateToDoDefault,#calPlusForm,#toDoProcessForm{
+display: inline-block;
+vertical-align: top;
+}
+  .borderOtop{
+    border-left:solid 1px black;
+    border-right:solid 1px black;
+    border-bottom:solid 1px black;
+  }
+  .filledTime{
+    border:solid 1px black;
+    background-color: aqua;
+    text-align: left;
+    margin :0%;
+    height:100%;
+    width: 70%;
+  }
+  .notFilledTime{
+    border-left:solid 1px black;
+    border-right:solid 1px black;
+    margin :0%;
+    height:100%;
+    width: 70%;  
+  }
+  .filledTimeBtn:hover{
+    cursor: pointer;
+    opacity: 0.5;
+  }
+  .filledTimeBtn{
+    border:none;
+    background-color: aqua;
+    text-align: left;
+    margin :0%;
+    height:100%;
+    width: 100%;
+  }
+  .borderObottom{
+    border-left:solid 1px black;
+    border-right:solid 1px black;
+    border-top:solid 1px black;
+  }
+  /*月カレンダー*/
+  #nowMonthForm,#monthCal {
+  width: 100%;
+    height: 100vh;
+    border-collapse: collapse;
+    text-align: center;
+    table-layout: fixed;
+
+}
+.month{
+height: 30px;
+}
+th{
+height: 40px;
+}
+table tr{
+  margin :0%;
+  width: 100%;
+}
+.monthCalTr{
+  height:200px;
+}
+  table th,.normDay,.sat,.sun{
+    text-align: center;
+  }
+  .overFlowScroll{
+    overflow:scroll;
+  }
+  .day{
+    display: flex;
+    table-layout: fixed;
+    justify-content: center;
+    width:100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: white;
+    margin :0%;
+  }  
+  .time{
+    background-color: white;
+    margin :0%;
+    border:none;
+    height:100%;
+  }
+  .sat{
+    color: blue;
+  }
+  .sun{
+    color: red;
+  }
+  /*日記の追加フォーム*/
+  #plusMenu {
+    padding: 12px;
+    margin-left: 0%;
+    background: white;
+    display: inline-block;
+  }
+  #plusCheck, #plusClose { display:none; }
+  #plusOpen {
+  display: inline-block;
+  cursor: pointer;
+  
+  }
+  #plusOpen:hover {
+  opacity: 0.5;
+  }
+  #plusOpen { display: inline-block; }
+  #plusClose, #calPlusForm {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #plusClose {
+  z-index: 2;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #calPlusForm {
+  z-index: 3;
+  width: 600px;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+100%);
+  overflow: auto;
+  }
+  #plusCheck:checked ~ #plusClose { display: inline-block; }
+  #plusCheck:checked ~ #calPlusForm{
+  transform: translateY(0);
+  }
+  /*日記の変更フォーム*/
+  #plusUpdateMenu {
+    padding: 12px;
+    margin-left: 0%;
+    background: white;
+    display: inline-block;
+    }
+    #plusUpdateCheck, #plusUpdateClose { display:none; }
+    #plusUpdateOpen {
+    display: inline-block;
+    cursor: pointer;
+    display: none;
+    }
+    #plusUpdateOpen:hover {
+    opacity: 0.5;
+    }
+    #plusUpdateOpen { display: inline-block; }
+    #plusUpdateClose, #calplusUpdateForm {
+    position: fixed;
+    left:0;
+    top: 0;
+    height: 100%;
+    }
+    #plusUpdateClose {
+    z-index: 2;
+    width: 100%;
+    background: gray;
+    opacity: 0.8;
+    transition: 0.5s;
+    }
+    #calplusUpdateForm {
+    z-index: 3;
+  width: 600px;
+    background: white;
+    transition: 0.5s;
+    transform: translateY(+100%);
+    overflow: auto;
+    }
+    
+    #plusUpdateCheck:checked ~ #plusUpdateClose { display: inline-block; }
+    #plusUpdateCheck:checked ~ #calplusUpdateForm{
+    transform: translateY(0);
+    }
+      
+/* 楽しかったこと */      
+#FunEvents{
+  width: 100%;
+}
+#FunEventsReadAbstractDiv{
+  height: 40vh;
+  overflow: auto;
+}
+/*アカウント再開・停止*/
+#toggleStatusLabel {
+  display: inline-block;
+  cursor: pointer;
+  }
+#toggleStatusLabel:hover {
+  opacity: 0.5;
+  }
+/*パスワード*/
+  #passCheck, #passClose { display:none; }
+  #passOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #passOpen:hover {
+  opacity: 0.5;
+  }
+  #passOpen { display: inline-block; }
+  #passClose, #pass {
+  position: fixed;
+  right:0;
+  top: 0;
+  height: 100%;
+  }
+  #passClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #pass {
+  z-index: 5;
+  width: 90%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+100%);
+  overflow: auto;
+  display: none;
+  }
+  #passCheck:checked ~ #passClose { display: inline-block; }
+  #passCheck:checked ~ #pass{
+  transform: translateY(0);
+  display: inline-block;
+  }
+
+/* 疑似や想像の追加フォーム */
+#plusObservationMenu {
+  padding: 12px;
+  margin-left: 0%;
+  background: white;
+  display: inline-block;
+  }
+  #plusObservationCheck, #plusObservationClose { display:none; }
+  #plusObservationOpen {
+  display: inline-block;
+  cursor: pointer;
+  
+  }
+  #plusObservationOpen:hover {
+  opacity: 0.5;
+  }
+  #plusObservationOpen { display: inline-block; }
+  #plusObservationClose, #plusObservationForm {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #plusObservationClose {
+  z-index: 2;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #plusObservationForm {
+  z-index: 3;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+100%);
+  overflow: auto;
+  }
+  #plusObservationCheck:checked ~ #plusObservationClose { display: inline-block; }
+  #plusObservationCheck:checked ~ #plusObservationForm{
+  transform: translateY(0);
+  }
+
+/*想像の文章の追加フォーム*/
+#plusImaginationTextMenu {
+  padding: 12px;
+  margin-left: 0%;
+  background: white;
+  display: inline-block;
+  }
+  #plusImaginationTextCheck, #plusImaginationTextClose { display:none; }
+  #plusImaginationTextOpen {
+  display: inline-block;
+  cursor: pointer;
+  
+  }
+  #plusImaginationTextOpen:hover {
+  opacity: 0.5;
+  }
+  #plusImaginationTextOpen { display: inline-block; }
+  #plusImaginationTextClose, #plusImaginationTextForm {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #plusImaginationTextClose {
+  z-index: 2;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #plusImaginationTextForm {
+  z-index: 3;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+100%);
+  overflow: auto;
+  }
+  #plusImaginationTextCheck:checked ~ #plusImaginationTextClose { display: inline-block; }
+  #plusImaginationTextCheck:checked ~ #plusImaginationTextForm{
+  transform: translateY(0);
+  }
+/*説明文*/
+#descriptionCheck, #descriptionClose { display:none; }
+  #descriptionOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen { display: inline-block; }
+  #descriptionClose, #description {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck:checked ~ #descriptionClose { display: inline-block; }
+  #descriptionCheck:checked ~ #description{
+  transform: translateY(0);
+  display: inline-block;
+  }
+
+/**/
+#descriptionCheck0, #descriptionClose0 { display:none; }
+  #descriptionOpen0 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen0:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen0 { display: inline-block; }
+  #descriptionClose0, #description0 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose0 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description0 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck0:checked ~ #descriptionClose0 { display: inline-block; }
+  #descriptionCheck0:checked ~ #description0{
+  transform: translateY(0);
+  display: inline-block;
+  }
+
+#descriptionCheck1, #descriptionClose1 { display:none; }
+  #descriptionOpen1 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen1:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen1 { display: inline-block; }
+  #descriptionClose1, #description1 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose1 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description1 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck1:checked ~ #descriptionClose1 { display: inline-block; }
+  #descriptionCheck1:checked ~ #description1{
+  transform: translateY(0);
+  display: inline-block;
+  }
+
+  #descriptionCheck2, #descriptionClose2 { display:none; }
+  #descriptionOpen2 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen2:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen2 { display: inline-block; }
+  #descriptionClose2, #description2 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose2 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description2 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck2:checked ~ #descriptionClose2 { display: inline-block; }
+  #descriptionCheck2:checked ~ #description2{
+  transform: translateY(0);
+  display: inline-block;
+  }
+
+  #descriptionCheck3, #descriptionClose3 { display:none; }
+  #descriptionOpen3 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen3:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen3 { display: inline-block; }
+  #descriptionClose3, #description3 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose3 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description3 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck3:checked ~ #descriptionClose3 { display: inline-block; }
+  #descriptionCheck3:checked ~ #description3{
+  transform: translateY(0);
+  display: inline-block;
+  }
+
+  #descriptionCheck4, #descriptionClose4 { display:none; }
+  #descriptionOpen4 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen4:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen4 { display: inline-block; }
+  #descriptionClose4, #description4 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose4 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description4 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck4:checked ~ #descriptionClose4 { display: inline-block; }
+  #descriptionCheck4:checked ~ #description4{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  #descriptionCheck5, #descriptionClose5 { display:none; }
+  #descriptionOpen5 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen5:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen5 { display: inline-block; }
+  #descriptionClose5, #description5 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose5 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description5 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck5:checked ~ #descriptionClose5 { display: inline-block; }
+  #descriptionCheck5:checked ~ #description5{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  #descriptionCheck6, #descriptionClose6 { display:none; }
+  #descriptionOpen6 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen6:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen6 { display: inline-block; }
+  #descriptionClose6, #description6 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose6 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description6 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck6:checked ~ #descriptionClose6 { display: inline-block; }
+  #descriptionCheck6:checked ~ #description6{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  #descriptionCheck7, #descriptionClose7 { display:none; }
+  #descriptionOpen7 {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #descriptionOpen7:hover {
+  opacity: 0.5;
+  }
+  #descriptionOpen7 { display: inline-block; }
+  #descriptionClose7, #description7 {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #descriptionClose7 {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #description7 {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+200%);
+  overflow: auto;
+  display: none;
+  }
+
+  #descriptionCheck7:checked ~ #descriptionClose7 { display: inline-block; }
+  #descriptionCheck7:checked ~ #description7{
+  transform: translateY(0);
+  display: inline-block;
+  }
+#textDescriptionCheck, #textDescriptionClose { display:none; }
+  #textDescriptionOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #textDescriptionOpen:hover {
+  opacity: 0.5;
+  }
+  #textDescriptionOpen { display: inline-block; }
+  #textDescriptionClose, #textDescription {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #textDescriptionClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #textDescription {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+50%);
+  overflow: auto;
+  display: none;
+  }
+  #textDescriptionCheck:checked ~ #textDescriptionClose { display: inline-block; }
+  #textDescriptionCheck:checked ~ #textDescription{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  #textInstructionCheck, #textInstructionClose { display:none; }
+  #textInstructionOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #textInstructionOpen:hover {
+  opacity: 0.5;
+  }
+  #textInstructionOpen { display: inline-block; }
+  #textInstructionClose, #textInstruction {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #textInstructionClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #textInstruction {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+50%);
+  overflow: auto;
+  display: none;
+  }
+  #textInstructionCheck:checked ~ #textInstructionClose { display: inline-block; }
+  #textInstructionCheck:checked ~ #textInstruction{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  
+
+  #instructionCheck, #instructionClose { display:none; }
+  #instructionOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #instructionOpen:hover {
+  opacity: 0.5;
+  }
+  #instructionOpen { display: inline-block; }
+  #instructionClose, #instruction {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #instructionClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #instruction {
+  z-index: 5;
+  width: 100%;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+50%);
+  overflow: auto;
+  display: none;
+  }
+  #instructionCheck:checked ~ #instructionClose { display: inline-block; }
+  #instructionCheck:checked ~ #instruction{
+  transform: translateY(0);
+  display: inline-block;
+  }
+/**/
+#textinstructionCheck, #textinstructionClose { display:none; }
+  #textinstructionOpen {
+  display: inline-block;
+  cursor: pointer;
+  }
+  #textinstructionOpen:hover {
+  opacity: 0.5;
+  }
+  #textinstructionOpen { display: inline-block; }
+  #textinstructionClose, #textinstruction {
+  position: fixed;
+  left:0;
+  top: 0;
+  height: 100%;
+  }
+  #textinstructionClose {
+  z-index: 4;
+  width: 100%;
+  background: gray;
+  opacity: 0.8;
+  transition: 0.5s;
+  }
+  #textinstruction {
+  z-index: 5;
+  width: 600px;
+  background: white;
+  transition: 0.5s;
+  transform: translateY(+50%);
+  overflow: auto;
+  display: none;
+  }
+  #textinstructionCheck:checked ~ #textinstructionClose { display: inline-block; }
+  #textinstructionCheck:checked ~ #textinstruction{
+  transform: translateY(0);
+  display: inline-block;
+  }
+  #plusFrontCoverBBSMenu {
+    padding: 12px;
+    margin-left: 0%;
+    background: white;
+    display: inline-block;
+    text-align: left;
+    }
+    #plusFrontCoverBBSForm {
+      text-align: left;
+      }
+    #plusFrontCoverBBSCheck, #plusFrontCoverBBSClose { display:none; }
+    #plusFrontCoverBBSOpen {
+    display: inline-block;
+    cursor: pointer;
+    
+    }
+    #plusFrontCoverBBSOpen:hover {
+    opacity: 0.5;
+    }
+    #plusFrontCoverBBSOpen { display: inline-block; }
+    #plusFrontCoverBBSClose, #plusFrontCoverBBSForm {
+    position: fixed;
+    left:0;
+    top: 0;
+    height: 100%;
+    }
+    #plusFrontCoverBBSClose {
+    z-index: 2;
+    width: 100%;
+    background: gray;
+    opacity: 0.8;
+    transition: 0.5s;
+    }
+    #plusFrontCoverBBSForm {
+    z-index: 3;
+    width: 600px;
+    background: white;
+    transition: 0.5s;
+    transform: translateY(+100%);
+    overflow: auto;
+    }
+    #plusFrontCoverBBSCheck:checked ~ #plusFrontCoverBBSClose { display: inline-block; }
+    #plusFrontCoverBBSCheck:checked ~ #plusFrontCoverBBSForm{
+    transform: translateY(0);
+    }
+
+/**/
+#updateBBSForm {
+  text-align: left;
+  }
+#updateBBSCheck, #updateBBSClose { display:none; }
+/* #updateBBSOpen {
+display: inline-block;
+cursor: pointer;
+
+} */
+/* #updateBBSOpen:hover {
+opacity: 0.5;
+} */
+#updateBBSOpen { display: inline-block; }
+#updateBBSClose, #updateBBSForm {
+position: fixed;
+left:0;
+top: 0;
+height: 100%;
+}
+#updateBBSClose {
+z-index: 2;
+width: 100%;
+background: gray;
+opacity: 0.8;
+transition: 0.5s;
+}
+#updateBBSForm {
+z-index: 3;
+width: 100%;
+background: white;
+transition: 0.5s;
+transform: translateY(+200%);
+overflow: auto;
+}
+#updateBBSCheck:checked ~ #updateBBSClose { display: inline-block; }
+#updateBBSCheck:checked ~ #updateBBSForm{
+transform: translateY(0);
+}
+    
+#UpdateBBSOpenDiv{
+  display: inline-block;
+  text-align: right;
+  width: 100%;
+}
+  .Red{
+    color: red;
+}
+.btn{
+  background-color: white;
+  margin :0%;
+  border:0%;
+  cursor: pointer;
+  opacity: 0.5;
+  width:100%;
+  height:100%;
+  border-color: white;
+}
+.loading{
+  display: none;
+}
+.patientBtn{
+background-color: white;
+margin :0%;
+border:0%;
+cursor: pointer;
+width:100%;
+height:100%;
+border-color: white;
+text-align: left;
+}
+.Abstractbtn{
+  border: none;
+}
+.Abstractbtn:hover{
+  cursor: pointer;
+  opacity: 0.5;
+}
+.none{
+  display:none;
+}
+.hidden{
+  visibility:hidden;
+}
+#prevImage,#nextImage{
+  width:100%;
+}
+h3,form{
+  display: block;
+}  
+.overFlowAuto{
+  overFlow:auto;
+}
+.info{
+  display: flex;
+  justify-content:space-between;
+}
+ul{
+  list-style-type: none;
+  margin :0%;
+  width:100%;
+  height:100%;
+}
+
+.inlineBlock{
+  display: inline-block;
+}
+.textAlignLeft{
+  text-align: left;
+}
+.textAlignCenter{
+  text-align: center;
+}
+.textAlignRight{
+  text-align: right;
+}
+.border{
+  border:solid 1px black;
+}
+.noneBorder{
+  border:none;
+}
+.textRight{
+  text-align: right;
+}
+.oneSentence{
+  display: block;
+}
+textarea{
+  vertical-align: top;
+}
+#addicInfo,#prevForm,#nextForm,#space{
+  display: inline-block;
+}
+.form{
+  display: block;
+  }
+  .canPush:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  .list{
+    overflow: auto;
+    list-style: none;
+  }
+  .z6{
+    z-index: 6;
+  }
+  .Block{
+    display: block;
+  }
+  :disabled{
+    background-color: white;
+    color: inherit;
+    opacity: 1;
+  }
+  #FunEventsOl{
+    height: 30vh;
+    overflow: auto;
+  }

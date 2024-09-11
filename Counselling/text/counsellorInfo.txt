@@ -1,0 +1,3 @@
+ID Rank Allname Hospital
+ID 役職 名前 施設
+管理者 責任者 担当者
