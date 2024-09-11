@@ -89,11 +89,7 @@ SQLerror:
         <div class="child">
             <h1>ログイン画面</h1>
             <form action="login.php" method="post" name="loginForm">
-                <div class="err_msg"><?php
-                 if (isset($err_msg['email'])) {
-                    echo $err_msg['email'];
-                }
-                 ?></div>
+                <div class="err_msg"><?php echo $err_msg['email']; ?></div>
                 <label for=""><span>メールアドレス</span>
                 <input type="email" name="email" maxlength=50><br>
                 </label>
