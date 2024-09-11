@@ -1,10 +1,19 @@
 <?php
     $err_msg=array();
-    $DBhost='133.18.244.234';
-    $DBusername='home10';
-    $DBpassword='8940hakuyo';
-    $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-    $db=mysqli_select_db($link,"takayuki");
+    $host = $_SERVER['HTTP_HOST'];
+    if($host=="localhost"){
+        $DBhost='localhost';
+        $DBusername='root';
+        $DBpassword='local';
+        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
+        $db=mysqli_select_db($link,"local");
+    }else{
+        $DBhost='133.18.244.234';
+        $DBusername='home10';
+        $DBpassword='8940hakuyo';
+        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
+        $db=mysqli_select_db($link,"takayuki");
+    }
     $display=array();
     $check=0;
     $region=32;

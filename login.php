@@ -1,11 +1,20 @@
 
 <?php
     session_start();
-    $DBhost='133.18.244.234';
-    $DBusername='home10';
-    $DBpassword='8940hakuyo';
-    $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-    $db=mysqli_select_db($link,"takayuki");
+    $host = $_SERVER['HTTP_HOST'];
+    if($host=="localhost"){
+        $DBhost='localhost';
+        $DBusername='root';
+        $DBpassword='local';
+        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
+        $db=mysqli_select_db($link,"local");
+    }else{
+        $DBhost='133.18.244.234';
+        $DBusername='home10';
+        $DBpassword='8940hakuyo';
+        $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
+        $db=mysqli_select_db($link,"takayuki");
+    }
     $class='';
     $email='';
     $password='';
@@ -97,7 +106,11 @@ SQLerror:
                 <label for=""><span>メールアドレス</span>
                 <input type="email" name="email" maxlength=50><br>
                 </label>
-                <div class="err_msg"><?php echo $err_msg['password']; ?></div>
+                <div class="err_msg"><?php
+                 if (isset($err_msg['password'])) {
+                    echo $err_msg['password'];
+                }
+                 ?></div>
                 <label for=""><span>パスワード</span>
                 <input type="password" name="password" maxlength=50><br>
                 </label>
