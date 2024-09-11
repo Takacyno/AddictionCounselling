@@ -111,7 +111,7 @@
                     </label>
                 </div>
                 <div class="displayDiv">
-                    <div class="err_msg"><?php echo $err_msg['query']; ?></div>
+                    <div class="err_msg"><?php if(isset($err_msg['query'])){echo $err_msg['query'];} ?></div>
                     <label for=""><span>結果</span><br>
                     <textarea type=text name="display" id="" cols="100" rows="30" readonly><?php
                         if(isset($_POST['query'])){
