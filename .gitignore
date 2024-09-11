@@ -3,3 +3,5 @@ Counselling/.htpasswd
 SQLscript.sql
 Counselling/old/
 Counselling/PHPMailer-master/
+Counselling/DBconnect.php
+DBconnect.php
