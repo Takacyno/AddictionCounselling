@@ -1,8 +1,8 @@
 <?php
     session_start();
-    $DBhost='133.18.244.234';
-    $DBusername='home10';
-    $DBpassword='8940hakuyo';
+    $DBhost='localhost';
+    $DBusername='root';
+    $DBpassword='local';
     $link=mysqli_connect($DBhost,$DBusername,$DBpassword);
-    $db=mysqli_select_db($link,"takayuki");
+    $db=mysqli_select_db($link,"local");
 ?>
