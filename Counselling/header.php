@@ -54,9 +54,9 @@
                 }
                 
             }
-            if($showToDo[$_SESSION["nowToDoView"]]!=1){
-                $_SESSION["nowToDoView"]=0;
-            }
+            // if($showToDo[$_SESSION["nowToDoView"]]!=1){
+            //     $_SESSION["nowToDoView"]=0;
+            // }
         }else if($_SESSION["nowCalView"]==2){
             for($cnt=2;$cnt<=$toDoNum+1;$cnt++){
                 echo '<li><button  id="toDoNav'.$cnt.'" name="toDoNav'.$cnt.'" class="noneBorder toDoNav" value='.$cnt.'>'.$toDoNameJP[$cnt-2];

@@ -55,7 +55,11 @@ if(count($newestBBS)>0){
 }
 echo '<br>';
 for($cnt=0;$cnt<count($frontCoverBBS);$cnt++){
-    $text= ereg_replace("(https?|ftp)(://[[:alnum:]\+\$\;\?\.%,!#~*/:@&=_-]+)","<a href=\"\\1\\2\" target=\"_blank\">\\1\\2</a>",$frontCoverBBS[$cnt]);
+    $text = preg_replace(
+        "/(https?|ftp)(:\/\/[[:alnum:]\+\$\;\?\.%,!#~*\/:@&=_-]+)/",
+        "<a href=\"\\1\\2\" target=\"_blank\">\\1\\2</a>",
+        $frontCoverBBS[$cnt]
+    );
     $text=str_replace("\n","<br>",$text);
     echo '<div  class="noneBorder toDoNav canPush">'.$text.'</div>';
     echo '<br>';

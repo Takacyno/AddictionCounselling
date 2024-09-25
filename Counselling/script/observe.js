@@ -362,51 +362,69 @@ function ObservationSelect_change(value){
         }else{
             tmpString+=ObservationNameJP[26][0];
         }
-        document.getElementById('Re'+toDoName[nowToDoView-2]+'TimeZoneSelect').options[Observation[cnt][22]].selected=true; 
+        document.getElementById('Re'+toDoName[nowToDoView-2]+'TimeZoneSelect').options[Observation[cnt][28]].selected=true; 
     }
     document.getElementById('ReObservationHowmany').value=tmpString;
     if(nowToDoView==7){
         document.getElementById('ReaboutWhatSelect').options[Observation[cnt][22]].selected=true;
-        document.getElementById('ReaboutWhatText').textContent=ImaginationText[Observation[cnt][22]][4];
+        document.getElementById('ReaboutWhatText').textContent=ImaginationText[Observation[cnt][28]][4];
         for(cnt2=0;cnt2<20;cnt2++){
-            document.getElementById('Re'+toDoName[nowToDoView-2]+'word'+cnt2).value=Observation[cnt][23+cnt2];
+            document.getElementById('Re'+toDoName[nowToDoView-2]+'word'+cnt2).value=Observation[cnt][29+cnt2];
         }
     }
     for(var cnt2=0;cnt2<2;cnt2++){
+        var textCount=0;
         for(var cnt3=0;cnt3<5;cnt3++){
             if(cnt3==3){
-            document.getElementById('Re'+ObservationName[1][cnt3]+ObservationName[0][cnt2]+'Select').options[Observation[cnt][3+cnt3+cnt2*6]].selected=true;
+                document.getElementById('Re'+ObservationName[1][cnt3]+ObservationName[0][cnt2]+'Select').options[Observation[cnt][3+textCount+cnt2*9]].selected=true;
+                textCount++;
             }else{
                 for(cnt4=0;cnt4<ObservationNameJP[2+cnt3*2].length;cnt4++){
-                    if(Observation[cnt][3+cnt3+cnt2*6].substr(cnt4,1)==1){
+                    if(Observation[cnt][3+textCount+cnt2*9].substr(cnt4,1)==1){
                         document.getElementById('Re'+ObservationName[1][cnt3]+ObservationName[0][cnt2]+'Check'+cnt4).checked=true;    
                     }else{
                         document.getElementById('Re'+ObservationName[1][cnt3]+ObservationName[0][cnt2]+'Check'+cnt4).checked=false;
                     }
                 }
+                document.getElementById('Re'+ObservationName[1][cnt3]+'Text'+ObservationName[0][cnt2]).value=Observation[cnt][4+textCount+cnt2*9];
+                RetextDisplaySwitch('Re'+ObservationName[1][cnt3]+ObservationName[0][cnt2]+'Check'+textCheck[cnt3]);
+                textCount+=2;
             }
         }
-        document.getElementById('Re'+'OtherText'+cnt2).value=Observation[cnt][8+cnt2*6];
-            RetextDisplaySwitch('Re'+ObservationName[1][cnt3-1]+ObservationName[0][cnt2]+'Check'+2);
+        // document.getElementById('Re'+'OtherText'+cnt2).value=Observation[cnt][8+cnt2*6];
+        // RetextDisplaySwitch('Re'+ObservationName[1][cnt3-1]+ObservationName[0][cnt2]+'Check'+2);
         // if(document.getElementById('Re'+ObservationName[1][cnt3]+ObservationName[0][cnt2]+'Check'+cnt4).checked==true)
         // RetextDisplaySwitch('Re'+ObservationName[1][4]+ObservationName[0][cnt2]+'Check'+textDisplay[0]);
     }
-    document.getElementById('Re'+toDoName[nowToDoView-2]+ObservationName[2][0]+'Select').options[Observation[cnt][15]].selected=true;
+    document.getElementById('Re'+toDoName[nowToDoView-2]+ObservationName[2][0]+'Select').options[Observation[cnt][21]].selected=true;
     RetextDisplaySwitch('Re'+toDoName[nowToDoView-2]+ObservationName[2][0]+'Select');
     for(var cnt2=0;cnt2<3;cnt2++){
-        document.getElementById('Re'+ObservationName[2][1+cnt2*2]+'Select').options[Observation[cnt][16+cnt2*2]].selected=true;
-        document.getElementById('Re'+toDoName[nowToDoView-2]+ObservationName[2][2+cnt2*2]).value=Observation[cnt][17+cnt2*2];
+        document.getElementById('Re'+ObservationName[2][1+cnt2*2]+'Select').options[Observation[cnt][22+cnt2*2]].selected=true;
+        document.getElementById('Re'+toDoName[nowToDoView-2]+ObservationName[2][2+cnt2*2]).value=Observation[cnt][23+cnt2*2];
         RetextDisplaySwitch('Re'+ObservationName[2][1+cnt2*2]+'Select');
     }
 }
 function textDisplaySwitch(id){
     var idString=String(id);
-    console.log(idString);
-    if(idString.includes(ObservationName[0][0])){
-        document.getElementById(ObservationName[1][5]+ObservationName[0][0]+'Div').classList.toggle("none");
-    }else if(idString.includes(ObservationName[0][1])){
-        document.getElementById(ObservationName[1][5]+ObservationName[0][1]+'Div').classList.toggle("none");
-    }else if(idString.includes(ObservationName[2][0])){
+    // if(idString.includes(ObservationName[0][0])){
+    //     document.getElementById(ObservationName[1][5]+ObservationName[0][0]+'Div').classList.toggle("none");
+    // }else if(idString.includes(ObservationName[0][1])){
+    //     document.getElementById(ObservationName[1][5]+ObservationName[0][1]+'Div').classList.toggle("none");
+    // }
+    if(idString.includes(ObservationName[0][0])||idString.includes(ObservationName[0][1])){
+        var divName =id.replace("Before", "TextBefore").replace("After", "TextAfter").replace(/Check/g, '').replace(/\d+/g, '')+'Div';
+        if(document.getElementById(id).checked&&document.getElementById(divName).classList.contains("none")){
+
+            while(1){
+                document.getElementById(divName).classList.remove("none");
+                if(!document.getElementById(divName).classList.contains("none"))break;
+            }
+        }
+        if(!document.getElementById(id).checked&&!document.getElementById(divName).classList.contains("none")){
+            document.getElementById(divName).classList.toggle("none");
+        }
+    }
+    else if(idString.includes(ObservationName[2][0])){
         if(document.getElementById(id).value>=1){
             if(document.getElementById(ObservationName[2][1]+'Div').classList.contains("none")){
                 document.getElementById(ObservationName[2][1]+'Div').classList.remove("none");
@@ -444,29 +462,18 @@ function ReaboutWhatSelectChange(num){
 
 function RetextDisplaySwitch(id){
     var idString=String(id);
-    if(idString.includes(ObservationName[0][0])){
-        if(document.getElementById(id).checked&&document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][0]+'Div').classList.contains("none")){
+    if(idString.includes(ObservationName[0][0])||idString.includes(ObservationName[0][1])){
+        var divName =id.replace("Before", "TextBefore").replace("After", "TextAfter").replace(/Check/g, '').replace(/\d+/g, '')+'Div';
+        if(document.getElementById(id).checked&&document.getElementById(divName).classList.contains("none")){
 
             while(1){
-                document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][0]+'Div').classList.remove("none");
-                if(!document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][0]+'Div').classList.contains("none"))break;
+                document.getElementById(divName).classList.remove("none");
+                if(!document.getElementById(divName).classList.contains("none"))break;
             }
         }
-        if(!document.getElementById(id).checked&&!document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][0]+'Div').classList.contains("none")){
-            document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][0]+'Div').classList.toggle("none");
+        if(!document.getElementById(id).checked&&!document.getElementById(divName).classList.contains("none")){
+            document.getElementById(divName).classList.toggle("none");
         }
-        
-    }else if(idString.includes(ObservationName[0][1])){
-        if(document.getElementById(id).checked&&document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][1]+'Div').classList.contains("none")){
-            while(1){
-                document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][1]+'Div').classList.remove("none");
-                if(!document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][1]+'Div').classList.contains("none"))break;
-            }
-        }
-        if(!document.getElementById(id).checked&&!document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][1]+'Div').classList.contains("none")){
-            document.getElementById('Re'+ObservationName[1][5]+ObservationName[0][1]+'Div').classList.toggle("none");
-        }
-
     }else if(idString.includes(ObservationName[2][0])){
         
         if(document.getElementById(id).value>=1){
@@ -676,12 +683,13 @@ function plusImaginationTextDate_check(obj){
         obj.disabled=null;
     }
 }
-
-if(nowToDoView==10&&nowCalView==1){
+document.addEventListener("DOMContentLoaded", function() {
+if(nowCalView==1&&nowToDoView==10){
     $(function() {
         $('#BBS').animate({scrollTop:$('#BBSbottom').offset().top }, 0, 'swing');
     });
 }
+});
 $(function() {
     $('.noDobble').on('click', function(){
         $(this).prop("disabled",true);

@@ -31,13 +31,9 @@
     <?php include("header.php"); ?>
     </header>
     
-     <section>
-    <?php include("date.php"); ?>
-    </section>
+    <section><?php include("date.php"); ?></section>
     
-    <section>
-    <?php include("title.php"); ?>
-    </section>
+    <section><?php include("title.php"); ?></section>
     
     <main>
         <?php
@@ -123,6 +119,7 @@
         var frontCoverBBS=<?php $json_frontCoverBBSData=json_encode($frontCoverBBSData); echo $json_frontCoverBBSData; ?>;
         var daySum=<?php $json_daySum=json_encode($daySum); echo $json_daySum; ?>;
         var addicStartCounselling=<?php $json_addicStartCounselling=json_encode($addicStartCounselling); echo $json_addicStartCounselling; ?>;
+        var textCheck=<?php $json_textCheck=json_encode($textCheck); echo $json_textCheck; ?>;
     </script>
     <script src="script/observe.js"></script>
     </main>

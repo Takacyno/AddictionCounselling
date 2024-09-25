@@ -60,6 +60,7 @@ if(count($Observation)>0){
         echo '<div class="oneSentence"><textarea cols=200 rows=2 id="ReaboutWhatText">'.$ImaginationTextComplete[$Observation[$cnt][22]][4].'</textarea></div>について想像<br>';
     }
     for($cnt2=0;$cnt2<2;$cnt2++){
+        $textCount=0;
         echo '<div class="inlineBlock textAlignLeft">';
         echo '<div class="oneSentence">'.$ObservationNameJP[0][0].$toDoNameJP[$_SESSION["nowToDoView"]-2].$ObservationNameJP[0][$cnt2+1].'</div>';
         for($cnt3=0;$cnt3<5;$cnt3++){
@@ -68,7 +69,7 @@ if(count($Observation)>0){
                 echo '</div><div class="oneSentence"><select id="Re'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Select" name="Re'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Select" >';
                 for($cnt4=0;$cnt4<count($ObservationNameJP[2+$cnt3*2]);$cnt4++){
                     $tmp='<option value='.$cnt4;
-                    if($cnt4==$Observation[$cnt][3+$cnt3+$cnt2*6]){
+                    if($cnt4==$Observation[$cnt][3+$textCount+$cnt2*9]){
                         $tmp.=' selected=true';
                     }
                     $tmp.='>';
@@ -77,16 +78,17 @@ if(count($Observation)>0){
                     echo $tmp;
                 }
                 echo '</select></div>';
+                $textCount++;
             }else{
                 for($cnt4=0;$cnt4<count($ObservationNameJP[2+$cnt3*2]);$cnt4++){
                     if($cnt4%$columnNum[$cnt3]==0){
                         echo '<div class="oneSentence">';
                     }
                     echo '<input id="Re'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Check'.$cnt4.'" name="Re'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Check'.$cnt4.'" type="checkbox"  ';
-                    if(substr($Observation[$cnt][3+$cnt3+$cnt2*6],$cnt4,1)==1){
+                    if(substr($Observation[$cnt][3+$textCount+$cnt2*9],$cnt4,1)==1){
                         echo 'checked';
                     }
-                    if($cnt3==4&&$cnt4==$textDisplay[0]){
+                    if($cnt4==$textCheck[$cnt3]){
                         echo ' onchange="RetextDisplaySwitch(this.id);"';
                     }
                     echo '><label for="Re'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Check'.$cnt4.'">'.$ObservationNameJP[2+$cnt3*2][$cnt4].'</label>';
@@ -98,20 +100,29 @@ if(count($Observation)>0){
                     }
                 }
                 echo '</div>';
+
+                echo '<div id="Re'.$ObservationName[1][$cnt3].'Text'.$ObservationName[0][$cnt2].'Div" class="';
+                if(substr($Observation[$cnt][3+$textCount+$cnt2*9],$textCheck[$cnt3],1)!=1){
+                    echo ' none';
+                }
+                echo'">'.$ObservationNameJP[11][0].'<textarea id="Re'.$ObservationName[1][$cnt3].'Text'.$ObservationName[0][$cnt2].'" name="Re'.$ObservationName[1][$cnt3].'Text'.$ObservationName[0][$cnt2].'" cols=100 rows=1 >'.$Observation[$cnt][4+$textCount+$cnt2*9].'</textarea></div>';
+
+                $textCount+=2;
             }
         }
-        echo '<div id="Re'.'OtherText'.$ObservationName[0][$cnt2].'Div" class="';
-        if(substr($Observation[$cnt][7+$cnt2*6],$textDisplay[0],1)!=1){
-            echo ' none';
-        }
-        echo'">'.$ObservationNameJP[11][0].'<textarea id="Re'.'OtherText'.$cnt2.'" name="Re'.'OtherText'.$cnt2.'" cols=100 rows=1 >'.$Observation[$cnt][8+$cnt2*6].'</textarea>　　</div></div>';
+        // echo '<div id="Re'.'OtherText'.$ObservationName[0][$cnt2].'Div" class="';
+        // if(substr($Observation[$cnt][7+$cnt2*6],$textDisplay[0],1)!=1){
+        //     echo ' none';
+        // }
+        // echo'">'.$ObservationNameJP[11][0].'<textarea id="Re'.'OtherText'.$cnt2.'" name="Re'.'OtherText'.$cnt2.'" cols=100 rows=1 >'.$Observation[$cnt][8+$cnt2*6].'</textarea>　　</div>';
+        echo '</div>';
     }
     
     echo '</div><div class="oneSentence ">　</div><div class="oneSentence textAlignLeft">'.$ObservationNameJP[12][0].$toDoNameJP[$_SESSION["nowToDoView"]-2].$ObservationNameJP[12][1];
     echo '<select id="Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][0].'Select" name="Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][0].'Select" onchange="RetextDisplaySwitch(this.id);">';
     for($cnt2=0;$cnt2<count($ObservationNameJP[13]);$cnt2++){
         $tmp='<option value='.$cnt2;
-        if($cnt2==$Observation[$cnt][15]){
+        if($cnt2==$Observation[$cnt][21]){
             $tmp.=' selected=true';
         }
         $tmp.='>';
@@ -123,7 +134,7 @@ if(count($Observation)>0){
     
     for($cnt2=0;$cnt2<3;$cnt2++){
         echo '<div id="Re'.$ObservationName[2][1+$cnt2*2].'Div" class="';
-        if($cnt2==0&&$Observation[$cnt][15]==0){
+        if($cnt2==0&&$Observation[$cnt][21]==0){
             echo 'none';
         }else{
             // echo 'oneSentence';    
@@ -131,7 +142,7 @@ if(count($Observation)>0){
         echo ' textAlignLeft">'.$ObservationNameJP[14+$cnt2*3][0].'<select id="Re'.$ObservationName[2][1+$cnt2*2].'Select" name="Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][1+$cnt2*2].'" onchange="RetextDisplaySwitch(this.id);">';
         for($cnt3=0;$cnt3<count($ObservationNameJP[15+$cnt2*3]);$cnt3++){
             $tmp='<option value='.$cnt3;
-            if($cnt3==$Observation[$cnt][16+$cnt2*2]){
+            if($cnt3==$Observation[$cnt][22+$cnt2*2]){
                 $tmp.=' selected=true';
             }
             $tmp.='>';
@@ -140,20 +151,20 @@ if(count($Observation)>0){
             echo $tmp;
         }
         echo '</select>　<div id="Re'.$ObservationName[2][2+$cnt2*2].'Div" ';
-        if(!$Observation[$cnt][16+$cnt2*2]==$textDisplay[$cnt2+1]){
+        if(!$Observation[$cnt][22+$cnt2*2]==$textDisplay[$cnt2+1]){
             echo 'class="none"';
         }else{
             // echo 'class="oneSentence"';                            
         }
         echo '>'.$ObservationNameJP[16+$cnt2*3][0].'<textarea id="Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][2+$cnt2*2].'" name="Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][2+$cnt2*2].'" cols=100 rows=1 ';
-        echo ' >'.$Observation[$cnt][17+$cnt2*2].'</textarea></div></div>';
+        echo ' >'.$Observation[$cnt][23+$cnt2*2].'</textarea></div></div>';
 
     }
     if($_SESSION["nowToDoView"]==6){
         echo '<div class="oneSentence textAlignLeft">'.$ObservationNameJP[23][0].'<select id="Re'.$toDoName[$_SESSION["nowToDoView"]-2].'TimeZoneSelect" name="Re'.$toDoName[$_SESSION["nowToDoView"]-2].'TimeZone" >';
         for($cnt2=0;$cnt2<count($ObservationNameJP[24]);$cnt2++){
             $tmp='<option value='.$cnt2;
-            if($cnt2==$Observation[$cnt][22]){
+            if($cnt2==$Observation[$cnt][28]){
                 $tmp.=' selected=true';
             }
             $tmp.='>'.$ObservationNameJP[24][$cnt2];
@@ -168,7 +179,7 @@ if(count($Observation)>0){
             if($cnt2%3==0){
                 echo '<div class="oneSentence">';
             }
-            echo '<textarea id="Re'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" name="Re'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" cols=60 rows=1>'.$Observation[$cnt][23+$cnt2].'</textarea>';
+            echo '<textarea id="Re'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" name="Re'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" cols=60 rows=1>'.$Observation[$cnt][29+$cnt2].'</textarea>';
             if(($cnt2+1)%3==0||$cnt2+1==20){
                 echo '</div>';
             }
@@ -224,13 +235,14 @@ for($cnt2=0;$cnt2<2;$cnt2++){
                 echo $tmp;
             }
             echo '</select></div>';
+            $textCount++;
         }else{
             for($cnt4=0;$cnt4<count($ObservationNameJP[2+$cnt3*2]);$cnt4++){
                 if($cnt4%$columnNum[$cnt3]==0){
                     echo '<div class="oneSentence">';
                 }
                 echo '<input id="'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Check'.$cnt4.'" name="'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Check'.$cnt4.'" type="checkbox"';
-                if($cnt3==4&&$cnt4==$textDisplay[0]){
+                if($cnt4==$textCheck[$cnt3]){
                     echo ' onchange="textDisplaySwitch(this.id);"';
                 }
                 echo '><label for="'.$ObservationName[1][$cnt3].$ObservationName[0][$cnt2].'Check'.$cnt4.'">'.$ObservationNameJP[2+$cnt3*2][$cnt4].'</label>';
@@ -242,9 +254,13 @@ for($cnt2=0;$cnt2<2;$cnt2++){
                 }
             }
             echo '</div>';
+            // echo '<div id="OtherText'.$ObservationName[0][$cnt2].'Div" class="none ">'.$ObservationNameJP[11][0].'<textarea id="OtherText'.$ObservationName[0][$cnt2].'" name="OtherText'.$ObservationName[0][$cnt2].'" cols=80 rows=1 ></textarea>　　';
+            echo '<div id="'.$ObservationName[1][$cnt3].'Text'.$ObservationName[0][$cnt2].'Div" class="none ">'.$ObservationNameJP[11][0].'<textarea id="'.$ObservationName[1][$cnt3].'Text'.$ObservationName[0][$cnt2].'" name="'.$ObservationName[1][$cnt3].'Text'.$ObservationName[0][$cnt2].'" cols=80 rows=1 ></textarea></div>';
+
+            $textCount+=2;
         }
     }
-    echo '<div id="OtherText'.$ObservationName[0][$cnt2].'Div" class="none ">'.$ObservationNameJP[11][0].'<textarea id="OtherText'.$ObservationName[0][$cnt2].'" name="OtherText'.$ObservationName[0][$cnt2].'" cols=80 rows=1 ></textarea>　　</div></div>';
+    echo '</div>';
 }
 
 echo '<div class="oneSentence ">　</div><div class="oneSentence textAlignLeft">'.$ObservationNameJP[12][0].$toDoNameJP[$_SESSION["nowToDoView"]-2].$ObservationNameJP[12][1];
@@ -262,7 +278,7 @@ for($cnt=0;$cnt<3;$cnt++){
     if($cnt==0){
         echo 'none ';
     }else{
-        echo 'oneSentence ';
+        // echo 'oneSentence ';
     }
     echo ' textAlignLeft">'.$ObservationNameJP[14+$cnt*3][0].'<select id="'.$ObservationName[2][1+$cnt*2].'Select" name="'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][1+$cnt*2].'" onchange="textDisplaySwitch(this.id);">';
     for($cnt2=0;$cnt2<count($ObservationNameJP[15+$cnt*3]);$cnt2++){
@@ -291,7 +307,7 @@ if($_SESSION["nowToDoView"]==7){
         if($cnt2%3==0){
             echo '<div class="oneSentence">';
         }
-        echo '<textarea id="'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" name="'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" cols=60 rows=1 >'.$Observation[22+$cnt2].'</textarea>';
+        echo '<textarea id="'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" name="'.$toDoName[$_SESSION["nowToDoView"]-2].'word'.$cnt2.'" cols=60 rows=1 ></textarea>';
         if(($cnt2+1)%3==0||$cnt2+1==20){
             echo '</div>';
         }
