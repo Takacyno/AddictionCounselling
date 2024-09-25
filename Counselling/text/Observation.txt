@@ -1,4 +1,4 @@
 Before After
-AutonomicNerves Feeling Direction DrivingForce Other OtherText
+AutonomicNerves Feeling Direction DrivingForce Other
 Completion Interruption InterruptionText Post PostText People PeopleText TimeZone
 word

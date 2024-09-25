@@ -87,20 +87,22 @@ for($i=1; $i<=date("t",strtotime($end_date)); $i++){
     case 6:
     case 7:
     case 9:
-        echo $monthContents[$i][0].'<br>';
-        $tmp=$monthSum+1;
-        $tmp2=(int) filter_var($monthContents[$i][0], FILTER_SANITIZE_NUMBER_INT);
-        if($_SESSION["nowToDoView"]==5||$_SESSION["nowToDoView"]==9){
-            if(!empty($monthContents[$i][0])){
-                $monthSum+=1;
-                echo '累計'.$monthSum.'回目';
-            }
-        }else{
-            $monthSum+=$tmp2;
-            if($tmp2==1){
-                echo '累計'.$monthSum.'回目';
-            }else if($tmp2>1){
-                echo '累計'.$tmp.'回目～'.$monthSum.'回目';
+        if(count($monthContents[$i])>0){
+            echo $monthContents[$i][0].'<br>';
+            $tmp=$monthSum+1;
+            $tmp2=(int) filter_var($monthContents[$i][0], FILTER_SANITIZE_NUMBER_INT);
+            if($_SESSION["nowToDoView"]==5||$_SESSION["nowToDoView"]==9){
+                if(!empty($monthContents[$i][0])){
+                    $monthSum+=1;
+                    echo '累計'.$monthSum.'回目';
+                }
+            }else{
+                $monthSum+=$tmp2;
+                if($tmp2==1){
+                    echo '累計'.$monthSum.'回目';
+                }else if($tmp2>1){
+                    echo '累計'.$tmp.'回目～'.$monthSum.'回目';
+                }
             }
         }
         break;

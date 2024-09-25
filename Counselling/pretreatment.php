@@ -1,4 +1,5 @@
 <?php include('DBconnect.php');?>    
+<?php include('global.php');?>    
 <?php
     
         // // セッションのライフタイム変更
@@ -136,6 +137,7 @@
     $line=substr(fgets($file),0,-1);
     $toDoName=explode(" ",$line);
     $toDoNum=count($toDoName);
+    $toDoName[$toDoNum-1]=substr($toDoName[$toDoNum-1], 0, -1);
     $line=substr(fgets($file),0,-1);
     $toDoNameJP=explode(" ",$line);
     $LongestToDoName=4;
@@ -735,6 +737,8 @@
         array_push($ObservationName,explode(" ",$line));
     }
     fclose($file);
+    $ObservationName[0][1]=trim($ObservationName[0][1]);
+    $ObservationName[1][count($ObservationName[1])-1]=trim($ObservationName[1][count($ObservationName[1])-1]);
     $file=fopen('text/ObservationJP.txt','r');
     while($line=substr(fgets($file),0,-1)){
         array_push($ObservationNameJP,explode(" ",$line));
@@ -1013,7 +1017,7 @@
             $tmp=$row[0]+1;
             $query='Insert into '.$addicName[$_SESSION["nowAddic"]].'PseudoAct values("'.$patient->ID.'","'.$now_date.'",'.$tmp;
             for($cnt=0;$cnt<count($ObservationName[0]);$cnt++){
-                for($cnt2=0;$cnt2<count($ObservationName[1])-1;$cnt2++){
+                for($cnt2=0;$cnt2<count($ObservationName[1]);$cnt2++){
                     if($cnt2==3){
                         $query.=','.$clean[$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Select'];
                     }else{
@@ -1026,9 +1030,10 @@
                             }
                         }
                         $query.=',"'.$tmp.'"';
+                        $query.=',"'.$clean[$ObservationName[1][$cnt2].'Text'.$ObservationName[0][$cnt]].'"';
                     }
                 }
-                $query.=',"'.$clean[$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'"';
+                // $query.=',"'.$clean[$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'"';
             }
             for($cnt=0;$cnt<count($ObservationName[2]);$cnt++){
                 $query.=',"'.$clean[$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'"';
@@ -1049,7 +1054,7 @@
             // $tmp=$row[0]+1;
             $query='Update '.$addicName[$_SESSION["nowAddic"]].'PseudoAct SET ';
             for($cnt=0;$cnt<count($ObservationName[0]);$cnt++){
-                for($cnt2=0;$cnt2<count($ObservationName[1])-1;$cnt2++){
+                for($cnt2=0;$cnt2<count($ObservationName[1]);$cnt2++){
                     if($cnt2==3){
                         $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'='.$clean['Re'.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Select'].',';
                     }else{
@@ -1062,9 +1067,11 @@
                             }
                         }
                         $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'="'.$tmp.'",';
+                        $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'="'.$tmp.'",';
+                        $query.=' '.$ObservationName[1][$cnt2].'Text'.$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][$cnt2].'Text'.$ObservationName[0][$cnt]].'",';        
                     }
                 }
-                $query.=' '.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'",';
+                // $query.=' '.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'",';
             }
             for($cnt=0;$cnt<count($ObservationName[2]);$cnt++){
                 $query.=' '.$ObservationName[2][$cnt].'="'.$clean['Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'"';
@@ -1088,7 +1095,7 @@
             $tmp=$row[0]+1;
             $query='Insert into '.$addicName[$_SESSION["nowAddic"]].'Imagination values("'.$patient->ID.'","'.$now_date.'",'.$tmp;
             for($cnt=0;$cnt<count($ObservationName[0]);$cnt++){
-                for($cnt2=0;$cnt2<count($ObservationName[1])-1;$cnt2++){
+                for($cnt2=0;$cnt2<count($ObservationName[1]);$cnt2++){
                     if($cnt2==3){
                         $query.=','.$clean[$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Select'];
                     }else{
@@ -1101,9 +1108,10 @@
                             }
                         }
                         $query.=',"'.$tmp.'"';
+                        $query.=',"'.$clean[$ObservationName[1][$cnt2].'Text'.$ObservationName[0][$cnt]].'"';
                     }
                 }
-                $query.=',"'.$clean[$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'"';
+                // $query.=',"'.$clean[$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'"';
             }
             for($cnt=0;$cnt<count($ObservationName[2])-1;$cnt++){
                 $query.=',"'.$clean[$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'"';
@@ -1129,7 +1137,7 @@
             // $tmp=$row[0]+1;
             $query='Update '.$addicName[$_SESSION["nowAddic"]].'Imagination SET ';
             for($cnt=0;$cnt<count($ObservationName[0]);$cnt++){
-                for($cnt2=0;$cnt2<count($ObservationName[1])-1;$cnt2++){
+                for($cnt2=0;$cnt2<count($ObservationName[1]);$cnt2++){
                     if($cnt2==3){
                         $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'='.$clean['Re'.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'Select'].',';
                     }else{
@@ -1142,9 +1150,10 @@
                             }
                         }
                         $query.=' '.$ObservationName[1][$cnt2].$ObservationName[0][$cnt].'="'.$tmp.'",';
+                        $query.=' '.$ObservationName[1][$cnt2].'Text'.$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][$cnt2].'Text'.$ObservationName[0][$cnt]].'",';        
                     }
                 }
-                $query.=' '.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'",';
+                // $query.=' '.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt].'="'.$clean['Re'.$ObservationName[1][count($ObservationName[1])-1].$ObservationName[0][$cnt]].'",';
             }
             for($cnt=0;$cnt<count($ObservationName[2])-1;$cnt++){
                 $query.=' '.$ObservationName[2][$cnt].'="'.$clean['Re'.$toDoName[$_SESSION["nowToDoView"]-2].$ObservationName[2][$cnt]].'",';
@@ -2019,7 +2028,6 @@ StageSelected:
         $file='text/description/'.$toDoName[$_SESSION["nowToDoView"]-2].'Description.txt';
         $description=file_get_contents($file);
         $description=str_replace("\n","<br>",$description);
-        fclose($file);
         if($_SESSION["nowToDoView"]==4||$_SESSION["nowToDoView"]==6||$_SESSION["nowToDoView"]==7){
             if(${'Info'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction'}!=""){
                 $instruction=${'Info'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction'};
@@ -2028,7 +2036,6 @@ StageSelected:
                 $file='text/instruction/'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction.txt';
                 $instruction=file_get_contents($file);
                 $instruction=str_replace("\n","<br>",$instruction);
-                fclose($file);    
             }
         }else{
             $file='text/instruction/'.$toDoName[$_SESSION["nowToDoView"]-2].'Instruction.txt';
@@ -2039,6 +2046,7 @@ StageSelected:
     }
 
     // if($_SESSION["nowCalView"]==1){
+    global $frontDescriptionTexts;
         switch($_SESSION["nowToDoView"]){
         case 0:   
             $frontDescriptionTexts=array();
@@ -2046,23 +2054,19 @@ StageSelected:
                 $file='text/description/'.$toDoName[$cnt].'Description.txt';
                 $frontDescription=file_get_contents($file);
                 $frontDescription=str_replace("\n","<br>",$frontDescription);
-                fclose($file);
                 array_push($frontDescriptionTexts,$frontDescription);
             }
             $file='text/description/ImaginationTextDescription.txt';
             $frontDescription=file_get_contents($file);
             $frontDescription=str_replace("\n","<br>",$frontDescription);
-            fclose($file);
             array_push($frontDescriptionTexts,$frontDescription);
             
             $file='text/instruction/KeepInstruction.txt';
             $instruction=file_get_contents($file);
             $instruction=str_replace("\n","<br>",$instruction);
-            fclose($file);
             $file='text/description/KeepDescription.txt';
             $description=file_get_contents($file);
             $description=str_replace("\n","<br>",$description);
-            fclose($file);//edit
             break;
         case 1:
             $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'Calendor where (ID="'.$patient->ID.'" and StartDateTime>="'.$now_date.' 00:00:00" and StartDateTime<="'.$now_date.' 23:50:00") or (ID="'.$patient->ID.'" and EndDateTime>="'.$now_date.' 00:00:00" and EndDateTime<="'.$now_date.' 23:50:00") ORDER BY StartDateTime ASC;';
@@ -2332,6 +2336,7 @@ StageSelected:
                 array_push($columnNum,(int)(50/($tmp+2)));
             }
             $textDisplay=array(2,5,2,1);
+            $textCheck=array(14,8,7,0,2);
             if($_SESSION["nowToDoView"]==7){
                 $query='SELECT * from '.$addicName[$_SESSION["nowAddic"]].'ImaginationText where ID="'.$patient->ID.'" and ActionTextOk=1 ORDER BY Num ASC;';
                 if(!($result=mysqli_query($link,$query))){
@@ -2355,11 +2360,9 @@ StageSelected:
                 $file='text/description/'.$toDoName[$_SESSION["nowToDoView"]-2].'TextDescription.txt';
                 $textDescription=file_get_contents($file);
                 $textDescription=str_replace("\n","<br>",$textDescription);
-                fclose($file);
                 $file='text/instruction/'.$toDoName[$_SESSION["nowToDoView"]-2].'TextInstruction.txt';
                 $textInstruction=file_get_contents($file);
                 $textInstruction=str_replace("\n","<br>",$textInstruction);
-                fclose($file);
             }
             break;
         case 8:
@@ -2620,7 +2623,6 @@ StageSelected:
                 break;
         }
     // }
-
     SQLerror:
         if(!empty(mysqli_error($link))){
             echo "Error".mysqli_error($link);    

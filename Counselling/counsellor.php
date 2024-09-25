@@ -394,7 +394,6 @@
         </form>
         </nav>
     </div>
-    Yeah
     <form action="counsellor.php" method="post" name="classSelectForm">
     <input type="hidden" name="classSelectForm" value=1>
     <?php
