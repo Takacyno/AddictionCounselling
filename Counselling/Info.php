@@ -35,8 +35,17 @@ if($_SESSION["class"]==1){
         }else if($cnt==17){
             for($cnt2=0;$cnt2<strlen($patient->TestShow);$cnt2++){
                 if((int)(substr($patient->TestShow,$cnt2,1))>0){
-                    echo $testNameJP[$cnt2].'　';
+                    echo trim($testNameJP[$cnt2]).'　';
                 }
+            }
+        }else if($cnt==18){
+            for($cnt2=0;$cnt2<count($toDoName);$cnt2++){
+                if((int)(substr($patient->DescriptionShow,$cnt2,1))>0){
+                    echo trim($toDoNameJP[$cnt2]).'　';
+                }
+            }
+            if((int)(substr($patient->DescriptionShow,$cnt2,1))>0){
+                echo '想像の準備　';
             }
         }else if($cnt==count($patientBasicInfoName[0])-2){
             for($cnt2=0;$cnt2<$addicNum;$cnt2++){
@@ -230,14 +239,14 @@ if($_SESSION["class"]==1){
             echo '</div>';
         // echo '</div><br>';
             
-        for($cnt=6;$cnt<count($patientBasicInfoName[0])-3;$cnt++){
+        for($cnt=6;$cnt<count($patientBasicInfoName[0])-4;$cnt++){
             echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
             // for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
             //     echo '　';
             // }
             echo '</label><textarea id="infoUpdate'.$patientBasicInfoName[0][$cnt].'" name="'.$patientBasicInfoName[0][$cnt].'" cols="50" rows="1">'.$patient->$patientBasicInfoName[0][$cnt].'</textarea><br>';
         }
-        $cnt=count($patientBasicInfoName[0])-3;
+        $cnt=count($patientBasicInfoName[0])-4;
         echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
             // for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
             //     echo '　';
@@ -251,6 +260,22 @@ if($_SESSION["class"]==1){
             echo '><label for="testShowCheck'.$cnt.'">'.$testNameJP[$cnt].'</label>　';
         }
         echo '<br>';
+        $cnt=count($patientBasicInfoName[0])-3;
+        echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
+        echo '</label>';
+        for($cnt=0;$cnt<count($toDoName);$cnt++){
+            echo '<input type="checkbox" id="descriptionShowCheck'.$cnt.'" name="descriptionShow'.$cnt.'" value="1" ';
+            if((int)(substr($patient->DescriptionShow,$cnt,1))>0){
+                echo 'checked';
+            }
+            echo '><label for="descriptionShowCheck'.$cnt.'">'.$toDoNameJP[$cnt].'</label>　';
+        }
+        echo '<input type="checkbox" id="descriptionShowCheck'.$cnt.'" name="descriptionShow'.$cnt.'" value="1" ';
+        if((int)(substr($patient->DescriptionShow,$cnt,1))>0){
+            echo 'checked';
+        }
+        echo '><label for="descriptionShowCheck'.$cnt.'">想像の準備</label>　';
+        echo '<br>';
         $cnt=count($patientBasicInfoName[0])-1;
         echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
             // for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
@@ -258,7 +283,7 @@ if($_SESSION["class"]==1){
             // }
         echo '</label>';
         for($cnt=0;$cnt<7;$cnt++){
-            echo '<input type="checkbox" id="holidayCheck'.$cnt.'" name="holiday'.$cnt.'" value="1"';
+            echo '<input type="checkbox" id="holidayCheck'.$cnt.'" name="holiday'.$cnt.'" value="1" ';
             if((int)(substr($patient->Holiday,$cnt,1))>0){
                 echo 'checked';
             }

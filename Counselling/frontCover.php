@@ -112,11 +112,15 @@ if($_SESSION["class"]==1){
     echo '</form>';
 }
 for($cnt=0;$cnt<count($frontDescriptionTexts)-1;$cnt++){
-    echo '<br><input type="checkbox" id="descriptionCheck'.$cnt.'">';
-    echo '<label id="descriptionOpen'.$cnt.'" for="descriptionCheck'.$cnt.'">'.$toDoNameJP[$cnt].'の説明文を表示</label>';
-    echo '<div id="description'.$cnt.'"><label for="descriptionCheck'.$cnt.'">閉じる</label><br>'.$frontDescriptionTexts[$cnt].'</div>';
+    if((int)(substr($patient->DescriptionShow,$cnt,1))>0){
+        echo '<br><input type="checkbox" id="descriptionCheck'.$cnt.'">';
+        echo '<label id="descriptionOpen'.$cnt.'" for="descriptionCheck'.$cnt.'">'.$toDoNameJP[$cnt].'の説明文を表示</label>';
+        echo '<div id="description'.$cnt.'"><label for="descriptionCheck'.$cnt.'">閉じる</label><br>'.$frontDescriptionTexts[$cnt].'</div>';
+    }
 }
-echo '<br><input type="checkbox" id="textDescriptionCheck">';
-echo '<label id="textDescriptionOpen" for="textDescriptionCheck">想像の準備の説明文を表示</label>';
-echo '<div id="textDescription"><label for="textDescriptionCheck" >閉じる</label><br>'.$frontDescriptionTexts[$cnt].'</div>';
+if((int)(substr($patient->DescriptionShow,$cnt,1))>0){
+    echo '<br><input type="checkbox" id="textDescriptionCheck">';
+    echo '<label id="textDescriptionOpen" for="textDescriptionCheck">想像の準備の説明文を表示</label>';
+    echo '<div id="textDescription"><label for="textDescriptionCheck" >閉じる</label><br>'.$frontDescriptionTexts[$cnt].'</div>';
+}
 ?>
