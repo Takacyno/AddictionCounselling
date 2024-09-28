@@ -137,7 +137,7 @@
     $line=substr(fgets($file),0,-1);
     $toDoName=explode(" ",$line);
     $toDoNum=count($toDoName);
-    // $toDoName[$toDoNum-1]=substr($toDoName[$toDoNum-1], 0, -1);
+    $toDoName[$toDoNum-1]=trim($toDoName[$toDoNum-1]);
     $line=substr(fgets($file),0,-1);
     $toDoNameJP=explode(" ",$line);
     $LongestToDoName=4;
