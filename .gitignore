@@ -7,7 +7,7 @@ Counselling/composer.phar
 Counselling/vendor/
 SQLscript.sql
 Counselling/old/
-Counselling/PHPMailer-master/
+Counselling/PHPMailer/
 Counselling/DBconnect.php
 DBconnect.php
 migration/

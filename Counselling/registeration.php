@@ -1,8 +1,5 @@
 <?php include('DBconnect.php');?>
 <?php
-    // ini_set('display_errors', 1);
-    // ini_set('display_startup_errors', 1);
-    // error_reporting(E_ALL);
     $clean = array();
     if (!empty($_POST)) {
         foreach ($_POST as $key => $value) {
@@ -58,6 +55,15 @@
     $line=substr(fgets($file),0,-1);
     $classNameJP=explode(" ",$line);
     fclose($file);
+    $file=fopen('text/toDoName.txt','r');
+    $line=substr(fgets($file),0,-1);
+    $toDoName=explode(" ",$line);
+    $toDoNum=count($toDoName);
+    $toDoName[$toDoNum-1]=trim($toDoName[$toDoNum-1]);
+    
+    $line=substr(fgets($file),0,-1);
+    $toDoNameJP=explode(" ",$line);
+    fclose($file);
     $query='SELECT Email from UserData;';
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
@@ -81,6 +87,7 @@
         array_push($patientBasicInfoName,$lineContents);
     }
     fclose($file);
+    $patientBasicInfoName[0][count($patientBasicInfoName[0])-1]=trim($patientBasicInfoName[0][count($patientBasicInfoName[0])-1]);
     $longestPatientInfoName=0;
     for($cnt=0;$cnt<count($patientBasicInfoName[0]);$cnt++){
         if(mb_strlen($patientBasicInfoName[1][$cnt])>$longestPatientInfoName){
@@ -102,253 +109,260 @@
     while ($row = mysqli_fetch_array($result)) {
         array_push($counsellors[$row[2]],$row);
     }
-    require 'vendor/autoload.php';
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
     
-    //   require 'PHPMailer/src/Exception.php';
-  
-    // require 'PHPMailer/src/PHPMailer.php';
-    // require 'PHPMailer/src/SMTP.php';
+    require 'PHPMailer/src/Exception.php';
+    require 'PHPMailer/src/PHPMailer.php';
+    require 'PHPMailer/src/SMTP.php';
     if(!empty($clean)){
-    //     if(!empty($clean["addPatient"])){
-    //         $tmp=$clean["Hospital"]-1;
-    //         $query='SELECT ID from PatientData where Hospital="'.$tmp.'";';
-    //         if(!($result=mysqli_query($link,$query))){
-    //             goto SQLerror;
-    //         }
-    //         $IDMaxnumber=0;
-    //         while ($row = mysqli_fetch_array($result)) {
-    //             echo $row[0];
-    //             if((int)substr($row[0],2)>(int)$IDMaxnumber){
-    //                 $IDMaxnumber=(int)substr($row[0],2);
-    //             }
-    //         }
-    //         $IDMaxnumber+=1;
-    //         $IDNumstr=(string)$IDMaxnumber;
-    //         $zeros=8-mb_strlen($IDNumstr);
-    //         $hospitalChrNum=$clean["Hospital"]+64;
-    //         $hospitalChr=chr($hospitalChrNum);
-    //         $IDStr='0'.$hospitalChr;
-    //         for($cnt=0;$cnt<$zeros;$cnt++){
-    //             $IDStr.='0';
-    //         }
-    //         $IDStr.=$IDNumstr;
-    //         $pass='';
-    //         for($cnt=0;$cnt<6;$cnt++){
-    //             $tmp=mt_rand(0,61);
-    //             if($tmp<=9){
-    //                 $pass.=chr($tmp+48);
-    //             }else if(10<=$tmp&&$tmp<=35){
-    //                 $pass.=chr($tmp+55);
-    //             }else{
-    //                 $pass.=chr($tmp+61);
-    //             }
-    //         }
+        if(!empty($clean["addPatient"])){
+            $tmp=$clean["Hospital"]-1;
+            $query='SELECT ID from PatientData where Hospital="'.$tmp.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            $IDMaxnumber=0;
+            while ($row = mysqli_fetch_array($result)) {
+                echo $row[0];
+                if((int)substr($row[0],2)>(int)$IDMaxnumber){
+                    $IDMaxnumber=(int)substr($row[0],2);
+                }
+            }
+            $IDMaxnumber+=1;
+            $IDNumstr=(string)$IDMaxnumber;
+            $zeros=8-mb_strlen($IDNumstr);
+            $hospitalChrNum=$clean["Hospital"]+64;
+            $hospitalChr=chr($hospitalChrNum);
+            $IDStr='0'.$hospitalChr;
+            for($cnt=0;$cnt<$zeros;$cnt++){
+                $IDStr.='0';
+            }
+            $IDStr.=$IDNumstr;
+            $pass='';
+            for($cnt=0;$cnt<6;$cnt++){
+                $tmp=mt_rand(0,61);
+                if($tmp<=9){
+                    $pass.=chr($tmp+48);
+                }else if(10<=$tmp&&$tmp<=35){
+                    $pass.=chr($tmp+55);
+                }else{
+                    $pass.=chr($tmp+61);
+                }
+            }
             
             
-    //         $mail = new PHPMailer(true);
-    //         try {
-    //             //Gmail 認証情報
-    //             $query='SELECT * from emailData;';
-    //             if(!($result=mysqli_query($link,$query))){
-    //               goto SQLerror;
-    //             }
-    //             $row = mysqli_fetch_assoc($result);
+            $mail = new PHPMailer(true);
+            try {
+                //Gmail 認証情報
+                $query='SELECT * from emailData;';
+                if(!($result=mysqli_query($link,$query))){
+                  goto SQLerror;
+                }
+                $row = mysqli_fetch_assoc($result);
                       
-    //             $host = $row['Host'];
-    //             $username = $row['Account']; 
-    //             $password = $row['Pass'];
+                $host = $row['Host'];
+                $username = $row['Account']; 
+                $password = $row['Pass'];
               
-    //             //差出人
-    //             $from = 'staff@mind-nature.net';
-    //             $fromname = 'カウンセリングサイト';
+                //差出人
+                $from = 'staff@mind-nature.net';
+                $fromname = 'カウンセリングサイト';
               
-    //             //宛先
-    //             $to = 'staff@mind-nature.net';
-    //             $toname = '谷原宗之';
+                //宛先
+                $to = 'staff@mind-nature.net';
+                $toname = '谷原宗之';
               
-    //             //件名・本文
-    //             $subject=$clean["Allname"]."さんのアカウントを作成しました";
-    //             $body=$clean["Allname"]."さんのメールアドレスは\n".$clean["Email"]."\nパスワードは\n".$pass."\nです";  
+                //件名・本文
+                $subject=$clean["Allname"]."さんのアカウントを作成しました";
+                $body=$clean["Allname"]."さんのメールアドレスは\n".$clean["Email"]."\nパスワードは\n".$pass."\nです";  
               
-    //             //メール設定
-    //             $mail->SMTPDebug = 2; //デバッグ用
-    //             $mail->isSMTP();
-    //             $mail->SMTPAuth = true;
-    //             $mail->Host = $host;
-    //             $mail->Username = $username;
-    //             $mail->Password = $password;
-    //             $mail->SMTPSecure = 'tls';
-    //             $mail->Port = 587;
-    //             $mail->CharSet = "utf-8";
-    //             $mail->Encoding = "base64";
-    //             $mail->setFrom($from, $fromname);
-    //             $mail->addAddress($to, $toname);
-    //             $mail->Subject = $subject;
-    //             $mail->Body    = $body;
+                //メール設定
+                $mail->SMTPDebug = 2; //デバッグ用
+                $mail->isSMTP();
+                $mail->SMTPAuth = true;
+                $mail->Host = $host;
+                $mail->Username = $username;
+                $mail->Password = $password;
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+                $mail->CharSet = "utf-8";
+                $mail->Encoding = "base64";
+                $mail->setFrom($from, $fromname);
+                $mail->addAddress($to, $toname);
+                $mail->Subject = $subject;
+                $mail->Body    = $body;
               
-    //             //メール送信
-    //             $mail->send();
-    //             echo '成功した';
+                //メール送信
+                $mail->send();
+                echo '成功した';
               
-    //           } catch (Exception $e) {
-    //             echo '失敗: ', $mail->ErrorInfo;
-    //             goto SQLerror;
-    //           }
+              } catch (Exception $e) {
+                echo '失敗: ', $mail->ErrorInfo;
+                goto SQLerror;
+              }
             
-    //         $pass=password_hash($pass,PASSWORD_BCRYPT);
-    //         $file=fopen(".htpasswd","a");
-    //         fputs($file,$IDStr.':'.$pass."\n");
-    //         fclose($file);
-    //         $query='INSERT into UserData values("'.$IDStr.'",0,"'.$pass.'","'.$clean["Email"].'",1);';
-    //         if(!($result=mysqli_query($link,$query))){
-    //             goto SQLerror;
-    //         }
-    //         $clean["Counsellors"]='';
-    //         $clean["Addictions"]='';
-    //         $clean["Holiday"]='';
-    //         $clean["Hospital"]=$clean["Hospital"]-1;
-    //         for($cnt=0;$cnt<count($clean["counsellorIDs"]);$cnt++){
-    //             $clean["Counsellors"].=$clean["counsellorIDs"][$cnt];
-    //         }
-    //         for($cnt=0;$cnt<count($testNameJP);$cnt++){
-    //             if($clean["testShow".$cnt]==1){
-    //                 $clean["TestShow"].=1;
-    //             }else{
-    //                 $clean["TestShow"].=0;
-    //             }
-    //         }
-    //         for($cnt=0;$cnt<$addicNum;$cnt++){
-    //             if($clean["addictions".$cnt]==1){
-    //                 $clean["Addictions"].=1;
-    //             }else{
-    //                 $clean["Addictions"].=0;
-    //             }
-    //         }
-    //         for($cnt=0;$cnt<7;$cnt++){
-    //             if($clean["holiday".$cnt]==1){
-    //                 $clean["Holiday"].=1;
-    //             }else{
-    //                 $clean["Holiday"].=0;
-    //             }
-    //         }
-    //         $query='INSERT into PatientData values("'.$IDStr.'"';
-    //         for($cnt=1;$cnt<count($patientBasicInfoName[0]);$cnt++){
-    //             $query.=',"'.$clean[$patientBasicInfoName[0][$cnt]].'"';
-    //         }
-    //         $query.=');';
-    //         if(!($result=mysqli_query($link,$query))){
-    //             goto SQLerror;
-    //         }
-    //         header('Location:counsellor.php');
-    //         exit;
-    //     }
-    //     if(!empty($clean["addCounsellor"])){
-    //         $tmp=$clean["counsellorHospital"]-1;
-    //         $query='SELECT ID from CounsellorData where Hospital="'.$tmp.'";';
-    //         if(!($result=mysqli_query($link,$query))){
-    //             goto SQLerror;
-    //         }
-    //         $IDMaxnumber=0;
-    //         while ($row = mysqli_fetch_array($result)) {
-    //             if((int)substr($row[0],2)>$IDMaxnumber){
-    //                 $IDMaxnumber=(int)substr($row[0],2);
-    //             }
-    //         }
-    //         $IDMaxnumber+=1;
+            $pass=password_hash($pass,PASSWORD_BCRYPT);
+            $file=fopen(".htpasswd","a");
+            fputs($file,$IDStr.':'.$pass."\n");
+            fclose($file);
+            $query='INSERT into UserData values("'.$IDStr.'",0,"'.$pass.'","'.$clean["Email"].'",1);';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            $clean["Counsellors"]='';
+            $clean["Addictions"]='';
+            $clean["DescriptionShow"]='';
+            $clean["Holiday"]='';
+            $clean["Hospital"]=$clean["Hospital"]-1;
+            for($cnt=0;$cnt<count($clean["counsellorIDs"]);$cnt++){
+                $clean["Counsellors"].=$clean["counsellorIDs"][$cnt];
+            }
+            for($cnt=0;$cnt<count($testNameJP);$cnt++){
+                if($clean["testShow".$cnt]==1){
+                    $clean["TestShow"].=1;
+                }else{
+                    $clean["TestShow"].=0;
+                }
+            }
+            for($cnt=0;$cnt<=count($toDoName);$cnt++){
+                if($clean["descriptionShow".$cnt]==1){
+                    $clean["DescriptionShow"].=1;
+                }else{
+                    $clean["DescriptionShow"].=0;
+                }
+            }
+            for($cnt=0;$cnt<$addicNum;$cnt++){
+                if($clean["addictions".$cnt]==1){
+                    $clean["Addictions"].=1;
+                }else{
+                    $clean["Addictions"].=0;
+                }
+            }
+            for($cnt=0;$cnt<7;$cnt++){
+                if($clean["holiday".$cnt]==1){
+                    $clean["Holiday"].=1;
+                }else{
+                    $clean["Holiday"].=0;
+                }
+            }
+            $query='INSERT into PatientData values("'.$IDStr.'"';
+            for($cnt=1;$cnt<count($patientBasicInfoName[0]);$cnt++){
+                $query.=',"'.$clean[$patientBasicInfoName[0][$cnt]].'"';
+            }
+            $query.=');';
+            echo $query;
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            header('Location:counsellor.php');
+            exit;
+        }
+        if(!empty($clean["addCounsellor"])){
+            $tmp=$clean["counsellorHospital"]-1;
+            $query='SELECT ID from CounsellorData where Hospital="'.$tmp.'";';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            $IDMaxnumber=0;
+            while ($row = mysqli_fetch_array($result)) {
+                if((int)substr($row[0],2)>$IDMaxnumber){
+                    $IDMaxnumber=(int)substr($row[0],2);
+                }
+            }
+            $IDMaxnumber+=1;
             
-    //         $IDNumstr=(string)$IDMaxnumber;
-    //         $zeros=8-mb_strlen($IDNumstr);
-    //         $hospitalChrNum=$clean["counsellorHospital"]+64;
-    //         $hospitalChr=chr($hospitalChrNum);
-    //         $IDStr=$hospitalChr.'0';
-    //         for($cnt=0;$cnt<$zeros;$cnt++){
-    //             $IDStr.='0';
-    //         }
-    //         $IDStr.=$IDNumstr;
-    //         $pass='';
-    //         for($cnt=0;$cnt<6;$cnt++){
-    //             $tmp=mt_rand(0,61);
-    //             if($tmp<=9){
-    //                 $pass.=chr($tmp+48);
-    //             }else if(10<=$tmp&&$tmp<=35){
-    //                 $pass.=chr($tmp+55);
-    //             }else{
-    //                 $pass.=chr($tmp+61);
-    //             }
-    //         }
-    //         $mail = new PHPMailer(true);
-    //         try {
-    //             //Gmail 認証情報
-    //             $query='SELECT * from emailData;';
-    //             if(!($result=mysqli_query($link,$query))){
-    //               goto SQLerror;
-    //             }
-    //             $row = mysqli_fetch_assoc($result);
+            $IDNumstr=(string)$IDMaxnumber;
+            $zeros=8-mb_strlen($IDNumstr);
+            $hospitalChrNum=$clean["counsellorHospital"]+64;
+            $hospitalChr=chr($hospitalChrNum);
+            $IDStr=$hospitalChr.'0';
+            for($cnt=0;$cnt<$zeros;$cnt++){
+                $IDStr.='0';
+            }
+            $IDStr.=$IDNumstr;
+            $pass='';
+            for($cnt=0;$cnt<6;$cnt++){
+                $tmp=mt_rand(0,61);
+                if($tmp<=9){
+                    $pass.=chr($tmp+48);
+                }else if(10<=$tmp&&$tmp<=35){
+                    $pass.=chr($tmp+55);
+                }else{
+                    $pass.=chr($tmp+61);
+                }
+            }
+            $mail = new PHPMailer(true);
+            try {
+                //Gmail 認証情報
+                $query='SELECT * from emailData;';
+                if(!($result=mysqli_query($link,$query))){
+                  goto SQLerror;
+                }
+                $row = mysqli_fetch_assoc($result);
                       
-    //             $host = $row['Host'];
-    //             $username = $row['Account']; 
-    //             $password = $row['Pass'];
+                $host = $row['Host'];
+                $username = $row['Account']; 
+                $password = $row['Pass'];
               
-    //             //差出人
-    //             $from = 'staff@mind-nature.net';
-    //             $fromname = 'カウンセリングサイト';
+                //差出人
+                $from = 'staff@mind-nature.net';
+                $fromname = 'カウンセリングサイト';
               
-    //             //宛先
-    //             $to = 'staff@mind-nature.net';
-    //             $toname = '谷原宗之';
+                //宛先
+                $to = 'staff@mind-nature.net';
+                $toname = '谷原宗之';
               
-    //             //件名・本文
-    //             $subject=$clean["Allname"]."さんのアカウントを作成しました";
-    //             $body=$clean["Allname"]."さんのメールアドレスは\n".$clean["Email"]."\nパスワードは\n".$pass."\nです";  
+                //件名・本文
+                $subject=$clean["Allname"]."さんのアカウントを作成しました";
+                $body=$clean["Allname"]."さんのメールアドレスは\n".$clean["Email"]."\nパスワードは\n".$pass."\nです";  
               
-    //             //メール設定
-    //             $mail->SMTPDebug = 2; //デバッグ用
-    //             $mail->isSMTP();
-    //             $mail->SMTPAuth = true;
-    //             $mail->Host = $host;
-    //             $mail->Username = $username;
-    //             $mail->Password = $password;
-    //             $mail->SMTPSecure = 'tls';
-    //             $mail->Port = 587;
-    //             $mail->CharSet = "utf-8";
-    //             $mail->Encoding = "base64";
-    //             $mail->setFrom($from, $fromname);
-    //             $mail->addAddress($to, $toname);
-    //             $mail->Subject = $subject;
-    //             $mail->Body    = $body;
+                //メール設定
+                $mail->SMTPDebug = 2; //デバッグ用
+                $mail->isSMTP();
+                $mail->SMTPAuth = true;
+                $mail->Host = $host;
+                $mail->Username = $username;
+                $mail->Password = $password;
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+                $mail->CharSet = "utf-8";
+                $mail->Encoding = "base64";
+                $mail->setFrom($from, $fromname);
+                $mail->addAddress($to, $toname);
+                $mail->Subject = $subject;
+                $mail->Body    = $body;
               
-    //             //メール送信
-    //             $mail->send();
-    //             echo '成功した';
+                //メール送信
+                $mail->send();
+                echo '成功した';
               
-    //           } catch (Exception $e) {
-    //             echo '失敗: ', $mail->ErrorInfo;
-    //             goto SQLerror;
-    //           }
+              } catch (Exception $e) {
+                echo '失敗: ', $mail->ErrorInfo;
+                goto SQLerror;
+              }
             
-    //         $pass=password_hash($pass,PASSWORD_BCRYPT);
-    //         $file=fopen(".htpasswd","a");
-    //         fputs($file,$IDStr.':'.$pass."\n");
-    //         fclose($file);
-    //         $query='INSERT into UserData values("'.$IDStr.'",1,"'.$pass.'","'.$clean["counsellorEmail"].'",1);';
-    //         if(!($result=mysqli_query($link,$query))){
-    //             goto SQLerror;
-    //         }
-    //         $clean["counsellorHospital"]=$clean["counsellorHospital"]-1;
-    //         $query='INSERT into CounsellorData values("'.$IDStr.'"';
-    //         for($cnt=1;$cnt<count($counsellorName[0]);$cnt++){
-    //             $query.=',"'.$clean['counsellor'.$counsellorName[0][$cnt]].'"';
-    //         }
-    //         $query.=');';
-    //         if(!($result=mysqli_query($link,$query))){
-    //             goto SQLerror;
-    //         }
-    //         echo '<script>alert("新しいカウンセラーのアカウントを作成しました");</script>';
-    //         header('Location:counsellor.php');
-    //         exit;
-    //     }
+            $pass=password_hash($pass,PASSWORD_BCRYPT);
+            $file=fopen(".htpasswd","a");
+            fputs($file,$IDStr.':'.$pass."\n");
+            fclose($file);
+            $query='INSERT into UserData values("'.$IDStr.'",1,"'.$pass.'","'.$clean["counsellorEmail"].'",1);';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            $clean["counsellorHospital"]=$clean["counsellorHospital"]-1;
+            $query='INSERT into CounsellorData values("'.$IDStr.'"';
+            for($cnt=1;$cnt<count($counsellorName[0]);$cnt++){
+                $query.=',"'.$clean['counsellor'.$counsellorName[0][$cnt]].'"';
+            }
+            $query.=');';
+            if(!($result=mysqli_query($link,$query))){
+                goto SQLerror;
+            }
+            echo '<script>alert("新しいカウンセラーのアカウントを作成しました");</script>';
+            header('Location:counsellor.php');
+            exit;
+        }
         if(!empty($clean["classSelect"])){
             $_SESSION["nowCreateClass"]=(int)$clean["classSelect"];
         }
@@ -503,14 +517,14 @@ mysqli_close($link);
                         echo '</div>';
                     echo '</div><br>';
 
-                    for($cnt=6;$cnt<count($patientBasicInfoName[0])-3;$cnt++){
+                    for($cnt=6;$cnt<count($patientBasicInfoName[0])-4;$cnt++){
                         echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
                         for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
                             echo '　';
                         }
                         echo '</label><textarea id="BasicInfo'.$patientBasicInfoName[0][$cnt].'" name="'.$patientBasicInfoName[0][$cnt].'" cols="50" rows="1"></textarea><br>';
                     }
-                    $cnt=count($patientBasicInfoName[0])-3;
+                    $cnt=count($patientBasicInfoName[0])-4;
                     echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
                         for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
                             echo '　';
@@ -521,6 +535,20 @@ mysqli_close($link);
                         echo '><label for="testShowCheck'.$cnt.'">'.$testNameJP[$cnt].'</label>';
                     }
                     echo '<br>';
+                    $cnt=count($patientBasicInfoName[0])-3;
+                    echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
+                    for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
+                        echo '　';
+                    }
+                    echo '</label>';
+                    for($cnt=0;$cnt<count($toDoName);$cnt++){
+                        echo '<input type="checkbox" id="descriptionShowCheck'.$cnt.'" name="descriptionShow'.$cnt.'" value="1" ';
+                        echo '><label for="descriptionShowCheck'.$cnt.'">'.$toDoNameJP[$cnt].'</label>　';
+                    }
+                    echo '<input type="checkbox" id="descriptionShowCheck'.$cnt.'" name="descriptionShow'.$cnt.'" value="1" ';
+                    echo '><label for="descriptionShowCheck'.$cnt.'">想像の準備</label>　';
+                    echo '<br>';
+
                     $cnt=count($patientBasicInfoName[0])-1;
                     echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
                         for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
@@ -528,8 +556,8 @@ mysqli_close($link);
                         }
                     echo '</label>';
                     for($cnt=0;$cnt<7;$cnt++){
-                        echo '<input type="checkbox" id="holidayCheck'.$cnt.'" name="holiday'.$cnt.'" value="1"';
-                        echo '><label for="holidayCheck'.$cnt.'">'.$week[$cnt].'</label>';
+                        echo '<input type="checkbox" id="holidayCheck'.$cnt.'" name="holiday'.$cnt.'" value="1" ';
+                        echo '><label for="holidayCheck'.$cnt.'">'.$week[$cnt].'</label>　';
                     }
                     echo '<br>';
                 echo '<input type="text" name="addPatient" value="送信" class="none">';
