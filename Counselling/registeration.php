@@ -55,6 +55,15 @@
     $line=substr(fgets($file),0,-1);
     $classNameJP=explode(" ",$line);
     fclose($file);
+    $file=fopen('text/toDoName.txt','r');
+    $line=substr(fgets($file),0,-1);
+    $toDoName=explode(" ",$line);
+    $toDoNum=count($toDoName);
+    $toDoName[$toDoNum-1]=trim($toDoName[$toDoNum-1]);
+    
+    $line=substr(fgets($file),0,-1);
+    $toDoNameJP=explode(" ",$line);
+    fclose($file);
     $query='SELECT Email from UserData;';
     if(!($result=mysqli_query($link,$query))){
         goto SQLerror;
@@ -78,6 +87,7 @@
         array_push($patientBasicInfoName,$lineContents);
     }
     fclose($file);
+    $patientBasicInfoName[0][count($patientBasicInfoName[0])-1]=trim($patientBasicInfoName[0][count($patientBasicInfoName[0])-1]);
     $longestPatientInfoName=0;
     for($cnt=0;$cnt<count($patientBasicInfoName[0]);$cnt++){
         if(mb_strlen($patientBasicInfoName[1][$cnt])>$longestPatientInfoName){
@@ -202,6 +212,7 @@
             }
             $clean["Counsellors"]='';
             $clean["Addictions"]='';
+            $clean["DescriptionShow"]='';
             $clean["Holiday"]='';
             $clean["Hospital"]=$clean["Hospital"]-1;
             for($cnt=0;$cnt<count($clean["counsellorIDs"]);$cnt++){
@@ -212,6 +223,13 @@
                     $clean["TestShow"].=1;
                 }else{
                     $clean["TestShow"].=0;
+                }
+            }
+            for($cnt=0;$cnt<=count($toDoName);$cnt++){
+                if($clean["descriptionShow".$cnt]==1){
+                    $clean["DescriptionShow"].=1;
+                }else{
+                    $clean["DescriptionShow"].=0;
                 }
             }
             for($cnt=0;$cnt<$addicNum;$cnt++){
@@ -233,6 +251,7 @@
                 $query.=',"'.$clean[$patientBasicInfoName[0][$cnt]].'"';
             }
             $query.=');';
+            echo $query;
             if(!($result=mysqli_query($link,$query))){
                 goto SQLerror;
             }
@@ -498,14 +517,14 @@ mysqli_close($link);
                         echo '</div>';
                     echo '</div><br>';
 
-                    for($cnt=6;$cnt<count($patientBasicInfoName[0])-3;$cnt++){
+                    for($cnt=6;$cnt<count($patientBasicInfoName[0])-4;$cnt++){
                         echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
                         for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
                             echo '　';
                         }
                         echo '</label><textarea id="BasicInfo'.$patientBasicInfoName[0][$cnt].'" name="'.$patientBasicInfoName[0][$cnt].'" cols="50" rows="1"></textarea><br>';
                     }
-                    $cnt=count($patientBasicInfoName[0])-3;
+                    $cnt=count($patientBasicInfoName[0])-4;
                     echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
                         for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
                             echo '　';
@@ -516,6 +535,20 @@ mysqli_close($link);
                         echo '><label for="testShowCheck'.$cnt.'">'.$testNameJP[$cnt].'</label>';
                     }
                     echo '<br>';
+                    $cnt=count($patientBasicInfoName[0])-3;
+                    echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
+                    for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
+                        echo '　';
+                    }
+                    echo '</label>';
+                    for($cnt=0;$cnt<count($toDoName);$cnt++){
+                        echo '<input type="checkbox" id="descriptionShowCheck'.$cnt.'" name="descriptionShow'.$cnt.'" value="1" ';
+                        echo '><label for="descriptionShowCheck'.$cnt.'">'.$toDoNameJP[$cnt].'</label>　';
+                    }
+                    echo '<input type="checkbox" id="descriptionShowCheck'.$cnt.'" name="descriptionShow'.$cnt.'" value="1" ';
+                    echo '><label for="descriptionShowCheck'.$cnt.'">想像の準備</label>　';
+                    echo '<br>';
+
                     $cnt=count($patientBasicInfoName[0])-1;
                     echo '<label class="info" >'.$patientBasicInfoName[1][$cnt];
                         for($cnt2=0;$cnt2<$longestPatientInfoName-mb_strlen($patientBasicInfoName[1][$cnt]);$cnt2++){
@@ -523,8 +556,8 @@ mysqli_close($link);
                         }
                     echo '</label>';
                     for($cnt=0;$cnt<7;$cnt++){
-                        echo '<input type="checkbox" id="holidayCheck'.$cnt.'" name="holiday'.$cnt.'" value="1"';
-                        echo '><label for="holidayCheck'.$cnt.'">'.$week[$cnt].'</label>';
+                        echo '<input type="checkbox" id="holidayCheck'.$cnt.'" name="holiday'.$cnt.'" value="1" ';
+                        echo '><label for="holidayCheck'.$cnt.'">'.$week[$cnt].'</label>　';
                     }
                     echo '<br>';
                 echo '<input type="text" name="addPatient" value="送信" class="none">';

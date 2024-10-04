@@ -160,6 +160,7 @@
         array_push($patientBasicInfoName,$lineContents);
     }
     fclose($file);
+    $patientBasicInfoName[0][count($patientBasicInfoName[0])-1]=trim($patientBasicInfoName[0][count($patientBasicInfoName[0])-1]);
     $file=fopen('text/patientAddicInfo.txt','r');
     $patientAddicInfoName=array();
     while($line=substr(fgets($file),0,-1)){
@@ -167,7 +168,7 @@
         array_push($patientAddicInfoName,$lineContents);
     }
     fclose($file);
-    
+    $patientAddicInfoName[0][count($patientAddicInfoName[0])-1]=trim($patientAddicInfoName[0][count($patientAddicInfoName[0])-1]);
     class Patient{
         public $ID;
         public $Allname;
@@ -188,6 +189,7 @@
         public $Supplement;
         public $Goal;
         public $TestShow;
+        public $DescriptionShow;
         public $Addictions;
         public $Holiday;
     }
@@ -274,6 +276,7 @@
             
             $clean["Counsellors"]='';
             $clean["TestShow"]='';
+            $clean["DescriptionShow"]='';
             $clean["Addictions"]='';
             $clean["Holiday"]='';
             for($cnt=0;$cnt<count($_POST["counsellorIDs"]);$cnt++){
@@ -284,6 +287,13 @@
                     $clean["TestShow"].=1;
                 }else{
                     $clean["TestShow"].=0;
+                }
+            }
+            for($cnt=0;$cnt<=count($toDoName);$cnt++){
+                if($clean["descriptionShow".$cnt]==1){
+                    $clean["DescriptionShow"].=1;
+                }else{
+                    $clean["DescriptionShow"].=0;
                 }
             }
             for($cnt=0;$cnt<$addicNum;$cnt++){
@@ -386,8 +396,8 @@
                     }
                 }
             }
-            // header('Location:observe.php');
-            // exit;
+            header('Location:observe.php');
+            exit;
         }
         if(!empty($clean['updateThisFrontCoverBBS'])){
             $query='update frontCoverBBS set BBSstatus='.$clean["FrontCoverBBSBBSstatus"].',TextContents="'.$clean["FrontCoverBBSTextContents"].'" where Num='.$clean["FrontCoverBBSNum"].';';

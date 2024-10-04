@@ -1,9 +1,13 @@
 Counselling/.htaccess
 Counselling/.htpasswd
 Counselling/global.php
+Counselling/composer.json
+Counselling/composer.lock
+Counselling/composer.phar
+Counselling/vendor/
 SQLscript.sql
 Counselling/old/
-Counselling/PHPMailer-master/
+Counselling/PHPMailer/
 Counselling/DBconnect.php
 DBconnect.php
 migration/
