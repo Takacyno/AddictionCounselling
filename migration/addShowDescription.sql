@@ -1,0 +1,1 @@
+ALTER TABLE PatientData add column DescriptionShow  varchar(50) after TestShow;
